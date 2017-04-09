@@ -9,3 +9,4 @@ simulate_datum(table0)
 \description{
 Simulate a datapoint given the complete factorisation table
 }
+\keyword{internal}

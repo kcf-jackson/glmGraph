@@ -5,6 +5,8 @@
 #' "quasibinomial", "quasipoisson")
 #' @export
 build_conditional <- function(df0, family) {
+  if (missing(family))
+    family = rep("gaussian", nrow(df0))
   df0 %>%
     dplyr::mutate(
       family = family,
@@ -33,5 +35,5 @@ update_conditional_mean <- function(df0, x0) {
 #' @keywords internal
 compute_mean <- function(pos, x, beta, inv_link, default) {
   if (length(x[pos]) == 0) { return(default) }
-  inv_link(sum(x[pos] * beta))
+  inv_link(sum(x[pos] * beta, na.rm = TRUE))
 }

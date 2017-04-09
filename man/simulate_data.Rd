@@ -4,7 +4,15 @@
 \alias{simulate_data}
 \title{Simulate data given the complete factorisation table}
 \usage{
-simulate_data(table0)
+simulate_data(table0, n)
+}
+\arguments{
+\item{table0}{dataframe; the complete factorisation table, output from "build_conditional".}
+
+\item{n}{integer; number of data to simulate.}
+}
+\value{
+n x p matrix; n is the number of data, p is the number of variables.
 }
 \description{
 Simulate data given the complete factorisation table
