@@ -4,12 +4,12 @@
 \alias{mean2parameters}
 \title{Convert (conditonal) mean value into parameter value}
 \usage{
-mean2parameters(mean0, parameters, family0)
+mean2parameters(parameters, mu, family)
 }
 \arguments{
-\item{mean0}{numeric; the mean value}
-
 \item{parameters}{a named list}
+
+\item{mu}{numeric; the mean value}
 
 \item{family0}{characters string; the exponential family.}
 }

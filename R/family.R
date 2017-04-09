@@ -43,7 +43,6 @@
 # }
 
 
-
 #' Return the density function of a family object
 #' @keywords internal
 family2likeFUN <- function(family, ...) {
@@ -110,29 +109,29 @@ family2invLinkFUN <- function(family, ...) {
 
 #' Convert (conditonal) mean value into parameter value
 #' @keywords internal
-#' @param mean0 numeric; the mean value
+#' @param mu numeric; the mean value
 #' @param parameters a named list
 #' @param family0 characters string; the exponential family.
-mean2parameters <- function(mean0, parameters, family0) {
-  if (family0 == "gaussian") {
-    parameters$mean <- mean0
+mean2parameters <- function(parameters, mu, family) {
+  if (family == "gaussian") {
+    parameters$mean <- mu
   }
-  if (family0 == "gamma") {
-    parameters$shape <- mean0 * parameters$rate
+  if (family == "gamma") {
+    parameters$shape <- mu * parameters$rate
   }
-  if (family0 == "poisson") {
-    parameters$lambda <- mean0
+  if (family == "poisson") {
+    parameters$lambda <- mu
   }
-  if (family0 == "binomial") {
-    parameters$prob <- mean0
+  if (family == "binomial") {
+    parameters$prob <- mu
   }
   # if (family0 == "multinomial") {}
-  if (family0 == "quasibinomial") {
+  if (family == "quasibinomial") {
     # mu = size * a / (a + b) => a = mu / (n - mu) * b
-    parameters$shape1 <- mean0 / (parameters$size - mean0) * parameters$shape2
+    parameters$shape1 <- mu / (parameters$size - mu) * parameters$shape2
   }
-  if (family0 == "quasipoisson") {
-    parameters$mu <- mean0
+  if (family == "quasipoisson") {
+    parameters$mu <- mu
   }
   parameters
 }
