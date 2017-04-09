@@ -8,9 +8,9 @@ MLE_graph <- function(table0, data0, engine = glm.fit) {
   pb <- txtProgressBar(1, nr, style=3)
   for (i in seq(nr)) {
     current <- table0[i, ]
-    c_family <- current$family %>% extract2(1)
-    c_fixed_index <- current$fixed %>% extract2(1)
-    c_given_index <- current$given %>% extract2(1)
+    c_family <- current$family %>% magrittr::extract2(1)
+    c_fixed_index <- current$fixed %>% magrittr::extract2(1)
+    c_given_index <- current$given %>% magrittr::extract2(1)
 
     glm_model <- fit_glm(
       x = cbind(intercept = 1, data0[,c_given_index]), #intercept
