@@ -35,8 +35,8 @@ make_symmetric <- function(m0) {
 #' This function plots graph from the function "create_random_graph".
 #' @param rgraph matrix; output from "create_random_graph".
 #' @export
-plot_graph <- function(rgraph) {
+plot_graph <- function(rgraph, vertex.size = 30, ...) {
   rgraph %>%
     igraph::graph_from_adjacency_matrix(mode = "undirected") %>%
-    plot()
+    plot(vertex.size = vertex.size, ...)
 }

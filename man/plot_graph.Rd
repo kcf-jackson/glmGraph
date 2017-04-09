@@ -4,7 +4,7 @@
 \alias{plot_graph}
 \title{This function plots graph from the function "create_random_graph".}
 \usage{
-plot_graph(rgraph)
+plot_graph(rgraph, vertex.size = 30, ...)
 }
 \arguments{
 \item{rgraph}{matrix; output from "create_random_graph".}
