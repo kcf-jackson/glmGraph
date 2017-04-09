@@ -1,0 +1,22 @@
+Package: glmGraph
+Title: Graphical models with Generalised Linear Model (GLM)
+Version: 0.0.1
+Authors@R: c(
+    person("Jackson", "Kwok", email = "kcf.jackson@gmail.com", role = c("aut", "cre")),
+    person("Felix", "Leung", role = c("aut"))
+  )
+Description: This packages provides functions to simulate from and fit graphical models 
+    where all conditional distributions follow the generalised linear model. This is 
+    mainly used to construct an approximation of multivariate distribution.
+Depends: 
+    R (>= 3.3.3)
+Imports:
+    VGAM,
+    igraph,
+    purrr,
+    magrittr,
+    dplyr
+License: file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
