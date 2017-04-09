@@ -1,6 +1,6 @@
 Package: glmGraph
 Title: Graphical models with Generalised Linear Model (GLM)
-Version: 0.0.1
+Version: 0.0.5
 Authors@R: c(
     person("Jackson", "Kwok", email = "kcf.jackson@gmail.com", role = c("aut", "cre")),
     person("Felix", "Leung", role = c("aut"))

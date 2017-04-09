@@ -30,15 +30,15 @@ compute_datum_likelihood <- function(table0, x, log = TRUE) {
     current <- table0[i, ]
 
     like_FUN <- current %>%
-      use_series(likelihood) %>%
-      extract2(1)
+      magrittr::use_series("likelihood") %>%
+      magrittr::extract2(1)
 
     parameters <- current %>%
-      magrittr::use_series(parameters) %>%
-      extract2(1)
+      magrittr::use_series("parameters") %>%
+      magrittr::extract2(1)
     # update parameters based on the conditional mean
     parameters %<>%
-      mean2parameters(mean0 = table0$mean, family = table0$family) %>%
+      mean2parameters(mu = table0$mean, family = table0$family) %>%
       append(list(x = x[i], log = log))
 
     loglikelihood <- loglikelihood + do.call(like_FUN, parameters)
@@ -62,7 +62,7 @@ build_conditional <- function(df0, family) {
       invLink_FUN = family %>% purrr::map(family2invLinkFUN),
       parameters = family %>% purrr::map(family2parameters),
       mean = rep(1, nrow(df0)),
-      beta = given %>% purrr::map(~rnorm(length(.x)))
+      beta = df0$given %>% purrr::map(~rnorm(length(.x)))
     )
 }
 
@@ -73,7 +73,7 @@ build_conditional <- function(df0, family) {
 #' for the parameters update.
 update_conditional_mean <- function(df0, x0) {
   x1 <- array(list(x0), nrow(df0))
-  df0$mean <- pmap_dbl(
+  df0$mean <- purrr::pmap_dbl(
     .l = list(pos = df0$given, x = x1, beta = df0$beta, inv_link = df0$link_FUN),
     .f = compute_mean
   )
