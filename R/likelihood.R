@@ -6,6 +6,9 @@
 #' @param log TRUE / FALSE; returns loglikelihood / likelihood.
 #' @export
 compute_likelihood <- function(table0, data0, log = TRUE) {
+  if (!(class(data0) %in% c("matrix", "data.frame"))) {
+    stop("You have only one datapoint and it is not of class 'matrix' or 'data.frame'.")
+  }
   nr <- nrow(data0)
   seq(nr) %>%
     purrr::map_dbl(

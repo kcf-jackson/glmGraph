@@ -15,10 +15,9 @@ build_conditional <- function(df0, family) {
       invLink_FUN = family %>% purrr::map(family2invLinkFUN),
       parameters = family %>% purrr::map(family2parameters),
       mean = rep(1, nrow(df0)),
-      beta = df0$given %>% purrr::map(~rnorm(length(.x)))
+      beta = df0$given %>% purrr::map(~rnorm(length(.x) + 1)) #intercept
     )
 }
-
 
 #' Update the conditional mean given the data
 #' @keywords internal
@@ -32,8 +31,9 @@ update_conditional_mean <- function(df0, x0) {
   )
   df0
 }
+
 #' @keywords internal
 compute_mean <- function(pos, x, beta, inv_link, default) {
-  if (length(x[pos]) == 0) { return(default) }
-  inv_link(sum(x[pos] * beta, na.rm = TRUE))
+  if (length(x[pos]) == 0) { return(beta) }
+  inv_link(sum(c(1, x[pos]) * beta, na.rm = TRUE)) #intercept
 }

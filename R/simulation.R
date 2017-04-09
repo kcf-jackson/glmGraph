@@ -2,7 +2,8 @@
 #' @param table0 dataframe; the complete factorisation table, output from "build_conditional".
 #' @param n integer; number of data to simulate.
 #' @return n x p matrix; n is the number of data, p is the number of variables.
-simulate_data <- function(table0, n) {
+#' @export
+simulate_data <- function(table0, n = 100) {
   seq(n) %>%
     purrr::map(~simulate_datum(table0)) %>%
     do.call(rbind, .)
@@ -17,7 +18,7 @@ simulate_datum <- function(table0) {
 
   table1 <- table0 %>% add_covariates_column()
   current_index <- table1 %>% get_standalone_rows()
-  has_more_index <- length(current_index) != 0
+  has_more_index <- !purrr::is_empty(current_index)
   while (has_more_index) {
     for (i in current_index) {
       current <- table1[i, ]
@@ -59,7 +60,7 @@ simulate_one_data <- function(conditional_density, n = 1) {
 
 #' @keywords internal
 add_covariates_column <- function(table0) {
-  table0 %<>% dplyr::mutate(X = purrr::map(beta, ~rep(NA, length(.x))))
+  table0 %<>% dplyr::mutate(X = purrr::map(beta, ~rep(NA, length(.x) - 1)))  #intercept
 }
 
 #' @keywords internal
