@@ -35,13 +35,14 @@ compute_loglikelihood <- function(table0, x) {
 }
 
 
+#' @export
 build_conditional <- function(df0, family) {
   df0 %>%
     dplyr::mutate(
       family = family,
       likelihood_FUN = family %>% purrr::map(family2likeFUN),
       simulation_FUN = family %>% purrr::map(family2simFUN),
-      link_FUN = family %>% purrr::map(family2invLinkFUN),
+      invLink_FUN = family %>% purrr::map(family2invLinkFUN),
       parameters = family %>% purrr::map(family2parameters),
       mean = rep(1, nrow(df0)),
       beta = given %>% purrr::map(~rnorm(length(.x)))

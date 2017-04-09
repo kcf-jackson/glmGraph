@@ -4,7 +4,7 @@
 \name{glmGraph}
 \alias{glmGraph}
 \alias{glmGraph-package}
-\title{A package for simulating data from a GLM model}
+\title{A package for simulating data from a GLM graphical model}
 \description{
 This packages provides functions to simulate from and fit graphical models
 where all conditional distributions follow the generalised linear model. This is
