@@ -11,7 +11,7 @@ build_conditional(df0, family)
 
 \item{family}{Characters string; the exponential family of distribution.
 It must be one of c("gaussian", "gamma", "poisson", "binomial", "multinomial",
-"quadibinomial", "quasipoisson")}
+"quasibinomial", "quasipoisson")}
 }
 \description{
 Specify the distribution for each conditional density

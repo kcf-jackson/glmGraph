@@ -100,7 +100,7 @@ family2invLinkFUN <- function(family, ...) {
     "gamma" = Gamma()$linkinv,
     "poisson" = poisson()$linkinv,
     "binomial" = binomial()$linkinv,
-    "multinomial" = VGAM::multinomial()@linkinv,
+    # "multinomial" = VGAM::multinomial()@linkinv,
     "quasibinomial" = VGAM::betabinomial()@linkinv,
     "quasipoisson" = quasipoisson()$linkinv
   )
