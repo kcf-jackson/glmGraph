@@ -4,7 +4,7 @@
 \alias{simulate_data}
 \title{Simulate data given the complete factorisation table}
 \usage{
-simulate_data(table0, n)
+simulate_data(table0, n = 100)
 }
 \arguments{
 \item{table0}{dataframe; the complete factorisation table, output from "build_conditional".}
