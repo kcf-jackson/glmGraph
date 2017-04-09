@@ -75,8 +75,8 @@ check_X <- function(vec0) {
 
 #' @keywords internal
 find_dependent_rows <- function(table0, var_index) {
-  table0 %>% extract2("given") %>%
-    purr::map_lgl(~has_index(.x, var_index)) %>% which()
+  table0 %>% magrittr::extract2("given") %>%
+    purrr::map_lgl(~has_index(.x, var_index)) %>% which()
 }
 
 #' @keywords internal
