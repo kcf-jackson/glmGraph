@@ -1,0 +1,36 @@
+---
+title: "Basic usage"
+author: "Jackson Kwok"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{intro}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, eval=F}
+library(magrittr)
+library(glmGraph)
+
+# Create graph
+rgraph <- create_random_graph(10, p = 0.2)
+plot_graph(rgraph, vertex.size = 30)
+
+# Factorise the joint density into products of conditionals
+table0 <- factorise(rgraph)
+
+# Specify the distribution of the conditionals
+table1 <- build_conditional(table0)
+
+# Simulate data
+data0 <- simulate_data(table1, n = 100)
+
+# Fit data
+table2 <- build_conditional(table0)
+table2 %<>% MLE_graph(data0)
+
+# Compare the truth and the fitted model
+compute_likelihood(table1, data0)
+compute_likelihood(table2, data0)
+```
