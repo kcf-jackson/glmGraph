@@ -23,15 +23,15 @@ build_conditional <- function(df0, family) {
 #' @describeIn This function updates the conditional mean given the data in preparation
 #' for the parameters update.
 update_conditional_mean <- function(df0, x0) {
-  x1 <- array(list(x0), nrow(df0))
   df0$mean <- purrr::pmap_dbl(
-    .l = list(pos = df0$given, x = x1, beta = df0$beta, inv_link = df0$link_FUN),
-    .f = compute_mean
+    .l = list(pos = df0$given, beta = df0$beta, inv_link = df0$invLink_FUN,
+              default = df0$mean),
+    .f = compute_mean, x = x0
   )
   df0
 }
 #' @keywords internal
-compute_mean <- function(pos, x, beta, inv_link) {
-  if (length(x[pos]) == 0) { return(NA) }
+compute_mean <- function(pos, x, beta, inv_link, default) {
+  if (length(x[pos]) == 0) { return(default) }
   inv_link(sum(x[pos] * beta))
 }

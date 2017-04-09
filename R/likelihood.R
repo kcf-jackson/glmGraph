@@ -9,7 +9,7 @@ compute_likelihood <- function(table0, data0, log = TRUE) {
   nr <- nrow(data0)
   seq(nr) %>%
     purrr::map_dbl(
-      ~compute_datum_likelihood(table0, data0[nr, ], log = log)
+      ~compute_datum_likelihood(table0, data0[.x, ], log = log)
     ) %>%
     sum()
 }
@@ -26,11 +26,11 @@ compute_datum_likelihood <- function(table0, x, log = TRUE) {
 
   num_components <- nrow(table0)
   loglikelihood <- 0
-  for (i in rev(seq(num_components))) {
+  for (i in seq(num_components)) {
     current <- table0[i, ]
 
     like_FUN <- current %>%
-      magrittr::use_series("likelihood") %>%
+      magrittr::use_series("likelihood_FUN") %>%
       magrittr::extract2(1)
 
     parameters <- current %>%
@@ -38,7 +38,7 @@ compute_datum_likelihood <- function(table0, x, log = TRUE) {
       magrittr::extract2(1)
     # update parameters based on the conditional mean
     parameters %<>%
-      mean2parameters(mu = table0$mean, family = table0$family) %>%
+      mean2parameters(mu = current$mean, family = current$family) %>%
       append(list(x = x[i], log = log))
 
     loglikelihood <- loglikelihood + do.call(like_FUN, parameters)
