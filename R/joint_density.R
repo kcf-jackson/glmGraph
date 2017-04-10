@@ -18,22 +18,3 @@ build_conditional <- function(df0, family) {
       beta = df0$given %>% purrr::map(~rnorm(length(.x) + 1)) #intercept
     )
 }
-
-#' Update the conditional mean given the data
-#' @keywords internal
-#' @describeIn This function updates the conditional mean given the data in preparation
-#' for the parameters update.
-update_conditional_mean <- function(df0, x0) {
-  df0$mean <- purrr::pmap_dbl(
-    .l = list(pos = df0$given, beta = df0$beta, inv_link = df0$invLink_FUN,
-              default = df0$mean),
-    .f = compute_mean, x = x0
-  )
-  df0
-}
-
-#' @keywords internal
-compute_mean <- function(pos, x, beta, inv_link, default) {
-  if (length(x[pos]) == 0) { return(beta) }
-  inv_link(sum(c(1, x[pos]) * beta, na.rm = TRUE)) #intercept
-}

@@ -1,6 +1,5 @@
 #' Compute the likelihood for a single data-point given the complete
 #' factorisation table
-#' @keywords internal
 #' @param table0 dataframe; A factorisation table, output from "build_conditional".
 #' @param data0 matrix or dataframe, the data.
 #' @param log TRUE / FALSE; returns loglikelihood / likelihood.
@@ -16,7 +15,6 @@ compute_likelihood <- function(table0, data0, log = TRUE) {
     ) %>%
     sum()
 }
-
 
 #' Compute the likelihood for a single data-point given the complete
 #' factorisation table
@@ -47,4 +45,26 @@ compute_datum_likelihood <- function(table0, x, log = TRUE) {
     loglikelihood <- loglikelihood + do.call(like_FUN, parameters)
   }
   loglikelihood
+}
+
+#' Update the conditional mean given the data
+#' @keywords internal
+#' @param df0 dataframe; A factorisation table, output from "build_conditional".
+#' @param x0 vector; single data point.
+#' @describeIn This function updates the conditional mean given the data in preparation
+#' for the parameters update.
+update_conditional_mean <- function(df0, x0) {
+  x0 %<>% as.numeric()
+  df0$mean <- purrr::pmap_dbl(
+    .l = list(pos = df0$given, beta = df0$beta, inv_link = df0$invLink_FUN,
+              default = df0$mean),
+    .f = compute_mean, x = x0
+  )
+  df0
+}
+
+#' @keywords internal
+compute_mean <- function(pos, x, beta, inv_link, default) {
+  if (length(x[pos]) == 0) { return(beta) }
+  inv_link(sum(c(1, x[pos]) * beta, na.rm = TRUE)) #intercept
 }
