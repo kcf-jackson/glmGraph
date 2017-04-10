@@ -41,7 +41,7 @@ get_available_rows <- function(table1, exclude = c()) {
 
 #' @keywords internal
 get_batch_eta <- function(beta, data0) {
-  (beta * t(data0)) %>% apply(2, sum)
+  (beta * t(data0)) %>% colSums()
 }
 
 #' @keywords internal
