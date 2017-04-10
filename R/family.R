@@ -115,22 +115,18 @@ family2invLinkFUN <- function(family, ...) {
 mean2parameters <- function(parameters, mu, family) {
   if (family == "gaussian") {
     parameters$mean <- mu
-  }
-  if (family == "gamma") {
+  } else if (family == "gamma") {
     parameters$shape <- mu * parameters$rate
-  }
-  if (family == "poisson") {
+  } else if (family == "poisson") {
     parameters$lambda <- mu
-  }
-  if (family == "binomial") {
+  } else if (family == "binomial") {
     parameters$prob <- mu
   }
   # if (family0 == "multinomial") {}
-  if (family == "quasibinomial") {
+  else if (family == "quasibinomial") {
     # mu = size * a / (a + b) => a = mu / (n - mu) * b
     parameters$shape1 <- mu / (parameters$size - mu) * parameters$shape2
-  }
-  if (family == "quasipoisson") {
+  } else if (family == "quasipoisson") {
     parameters$mu <- mu
   }
   parameters
