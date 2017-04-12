@@ -1,7 +1,9 @@
 #' The function generates a factorisation based on a graph
 #' @param rgraph matrix; graph represented by an adjacency matrix
+#' @param response_node the index of the response variable; simply ignore if there is
+#' no response variable.
 #' @export
-factorise <- function(rgraph) {
+factorise <- function(rgraph, response_node = 1) {
   num_nodes <- ncol(rgraph)
   joint <- seq(num_nodes)
   full_factorisation  <- array(list(), num_nodes + 1)
@@ -9,7 +11,7 @@ factorise <- function(rgraph) {
   i <- 1
   fully_factorised <- (length(joint) == 0)
   while (!fully_factorised) {
-    res <- joint %>% factorise_density()
+    res <- joint %>% factorise_density(keep_pos = response_node)
     resc <- res$conditional
     full_factorisation[[i]] <- resc %>%
       simplify_conditional(rgraph[resc$fixed, ])
@@ -44,6 +46,7 @@ factorise_density <- function(joint_vec, keep_pos = 1) {
 #' This function simplifies conditionanl given the dependence information
 #' @param conditional_list The conditional density. It should be a list of two vectors.
 #' @param edges The vector containing the dependence information.
+#' @keywords internal
 simplify_conditional <- function(conditional_list, edges) {
   conditional_list$given %<>% setdiff(which(edges == 0))
   conditional_list

@@ -31,17 +31,18 @@ simulate_data <- function(table0, n = 100) {
 
 #' @keywords internal
 get_available_rows <- function(table1, exclude = c()) {
-   table1 %>%
+  table1 %>%
     magrittr::use_series("given") %>%
     purrr::map_lgl(
       ~setdiff(.x, exclude) %>% purrr::is_empty()
     ) %>%
-    which()
+    which() %>%
+    setdiff(exclude)
 }
 
 #' @keywords internal
 get_batch_eta <- function(beta, data0) {
-  (beta * t(data0)) %>% colSums()
+  colSums(beta * t(data0))
 }
 
 #' @keywords internal
