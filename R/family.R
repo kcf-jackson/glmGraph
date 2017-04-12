@@ -51,10 +51,10 @@ family2likeFUN <- function(family, ...) {
     "gaussian" = dnorm,
     "gamma" = dgamma,
     "poisson" = dpois,
-    "binomial" = dbinom,
+    "binomial" = dbinom
     # "multinomial" = dmultinom,
-    "quasibinomial" = VGAM::dbetabinom.ab,
-    "quasipoisson" = dnbinom
+    # "quasibinomial" = VGAM::dbetabinom.ab,
+    # "quasipoisson" = dnbinom
   )
   likeFUN
 }
@@ -67,10 +67,10 @@ family2simFUN <- function(family, ...) {
     "gaussian" = rnorm,
     "gamma" = rgamma,
     "poisson" = rpois,
-    "binomial" = rbinom,
+    "binomial" = rbinom
     # "multinomial" = rmultinom,
-    "quasibinomial" = VGAM::rbetabinom.ab,
-    "quasipoisson" = rnbinom
+    # "quasibinomial" = VGAM::rbetabinom.ab,
+    # "quasipoisson" = rnbinom
   )
   simFUN
 }
@@ -83,10 +83,10 @@ family2parameters <- function(family, ...) {
     "gaussian" = list(mean = 0, sd = 1),
     "gamma" = list(shape = 1, rate = 1),
     "poisson" = list(lambda = 1),
-    "binomial" = list(size = 1, prob = 0.5),
+    "binomial" = list(size = 1, prob = 0.5)
     # "multinomial" = list(size = 1, prob = rep(0.5, 5)),
-    "quasibinomial" = list(size = 1, shape1 = 1, shape2 = 1),
-    "quasipoisson" = list(size = 1, mu = 1)
+    # "quasibinomial" = list(size = 1, shape1 = 1, shape2 = 1),
+    # "quasipoisson" = list(size = 1, mu = 1)
   )
   parameters
 }
@@ -99,10 +99,10 @@ family2invLinkFUN <- function(family, ...) {
     "gaussian" = gaussian()$linkinv,
     "gamma" = Gamma()$linkinv,
     "poisson" = poisson()$linkinv,
-    "binomial" = binomial()$linkinv,
+    "binomial" = binomial()$linkinv
     # "multinomial" = VGAM::multinomial()@linkinv,
-    "quasibinomial" = VGAM::betabinomial()@linkinv,
-    "quasipoisson" = quasipoisson()$linkinv
+    # "quasibinomial" = VGAM::betabinomial()@linkinv,
+    # "quasipoisson" = quasipoisson()$linkinv
   )
   parameters
 }
@@ -110,24 +110,34 @@ family2invLinkFUN <- function(family, ...) {
 #' Convert (conditonal) mean value into parameter value
 #' @keywords internal
 #' @param mu numeric; the mean value
-#' @param parameters a named list
+#' @param parameters a named list; the parameters
 #' @param family0 characters string; the exponential family.
 mean2parameters <- function(parameters, mu, family) {
   if (family == "gaussian") {
     parameters$mean <- mu
   } else if (family == "gamma") {
-    parameters$shape <- mu * parameters$rate
+    parameters$rate <- parameters$shape / mu
   } else if (family == "poisson") {
     parameters$lambda <- mu
   } else if (family == "binomial") {
     parameters$prob <- mu
   }
   # if (family0 == "multinomial") {}
-  else if (family == "quasibinomial") {
-    # mu = size * a / (a + b) => a = mu / (n - mu) * b
-    parameters$shape1 <- mu / (parameters$size - mu) * parameters$shape2
-  } else if (family == "quasipoisson") {
-    parameters$mu <- mu
+  # else if (family == "quasibinomial") {
+  #   # mu = size * a / (a + b) => a = mu / (n - mu) * b
+  #   parameters$shape1 <- mu / (parameters$size - mu) * parameters$shape2
+  # } else if (family == "quasipoisson") {
+  #   parameters$mu <- mu
+  # }
+  parameters
+}
+
+#' @keywords internal
+dispersion2parameters <- function(parameters, dispersion, family) {
+  if (family == "gaussian") {
+    parameters$sd <- dispersion
+  } else if (family == "gamma") {
+    parameters$shape <- 1 / dispersion
   }
   parameters
 }
