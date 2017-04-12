@@ -15,7 +15,8 @@ Imports:
     igraph,
     purrr,
     magrittr,
-    dplyr
+    dplyr,
+    speedglm
 License: file LICENSE
 Encoding: UTF-8
 LazyData: true

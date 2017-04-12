@@ -8,6 +8,10 @@ plot_graph(rgraph, vertex.size = 30, ...)
 }
 \arguments{
 \item{rgraph}{matrix; output from "create_random_graph".}
+
+\item{vertex.size}{plot size of the node.}
+
+\item{...}{extra parameters to be passed to the 'igraph::plot.igraph' function.}
 }
 \description{
 This function plots graph from the function "create_random_graph".

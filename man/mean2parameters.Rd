@@ -7,7 +7,7 @@
 mean2parameters(parameters, mu, family)
 }
 \arguments{
-\item{parameters}{a named list}
+\item{parameters}{a named list; the parameters}
 
 \item{mu}{numeric; the mean value}
 

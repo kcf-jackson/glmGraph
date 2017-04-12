@@ -9,6 +9,13 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+The package is 
+
+Here is the key functionality:
+
+The goal is to learn an approximate multivariate distribution from the data.
+
+
 ```{r, eval=F}
 library(magrittr)
 library(glmGraph)
@@ -21,16 +28,25 @@ plot_graph(rgraph, vertex.size = 30)
 table0 <- factorise(rgraph)
 
 # Specify the distribution of the conditionals
-table1 <- build_conditional(table0)
+family <- rep("gaussian", nrow(table0))
+table0 %<>% build_conditional(family = family)
 
 # Simulate data
-data0 <- simulate_data(table1, n = 100)
+data0 <- simulate_data(table0, n = 1000)
+```
 
-# Fit data
-table2 <- build_conditional(table0)
-table2 %<>% MLE_graph(data0)
+Now let's fit a model using the graph and see if we can recover the parameter coefficients.
+```{r, eval = F}
+# Create a new table to fit data
+table1 <- rgraph %>% factorise() %>% build_conditional(family)
+table1 %<>% MLE_graph(data0)
 
 # Compare the truth and the fitted model
-compute_likelihood(table1, data0)
-compute_likelihood(table2, data0)
+data.frame(cbind(true_beta = table0$beta, fitted_beta = table1$beta))
+compute_likelihood(table0, data0)
+get_model_likelihood(table1)
 ```
+
+
+Experiment 
+We are interested in the following question: Given the true graph structure, can the method recover the parameters values?

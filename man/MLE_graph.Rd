@@ -4,14 +4,15 @@
 \alias{MLE_graph}
 \title{Fitting the GLM graphical model with MLE.}
 \usage{
-MLE_graph(table0, data0, engine = glm.fit)
+MLE_graph(table0, data0)
 }
 \arguments{
 \item{table0}{dataframe; the complete factorisation table, output from "build_conditional".}
 
 \item{data0}{dataframe; the data.}
-
-\item{engine}{function; the function to fit a GLM.}
+}
+\value{
+dataframe; the complete factorisation table with fitted beta.
 }
 \description{
 Fitting the GLM graphical model with MLE.
