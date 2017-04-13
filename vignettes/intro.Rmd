@@ -1,6 +1,6 @@
 ---
-title: "Basic usage"
-author: "Jackson Kwok"
+title: "An introduction to glmGraph"
+author: "Jackson Kwok, Felix Leung"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -9,46 +9,129 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-The package is 
+## Introduction
+The package "glmGraph" is about learning an approximate multivariate distribution from data. Suppose the target multivariate distribution has a density $f(x_1, x_2, ..., x_n)$, we model it using a graphical model with parametric components. 
 
-Here is the key functionality:
-
-The goal is to learn an approximate multivariate distribution from the data.
+For sake of clarity, we briefly introduce the graphical model. A graphical model is a statistical model specified by a graph. A graph consists of nodes and edges: nodes represent variables, and an edge between two nodes represents dependence between two variables. An example of a graph is shown in Figure \ref{graph_example_1}. To model the data with the graphical model, we ...
 
 
-```{r, eval=F}
+
+Concretely, we first factorise the target density into $n$ components:
+$$f(x_1, x_2, ..., x_n) = f(x_1 | x_2, ..., x_n) f(x_2 | x_3, ..., x_n) ... f(x_{n-1} |x_n) f(x_n)$$
+Then, we simplify each component according to the graph. For example, if $x_1$ is only connected to $x_3$, then we have $f(x_1 | x_2, ..., x_n) = f(x_1 | x_3)$.
+# Factorise the joint density into products of conditionals
+The parametric model proposed for the components is the Generalised Linear Model (GLM).
+
+
+
+## Review of Generalised Linear Model (GLM)
+
+
+
+## Basic functionalities
+In this section, we describe the usage and provide examples of the key functions in the package. We break the introduction into five parts, each corresponding to a task:  
+  1. Specify a graphical model,
+  2. Simulate from a graphical model,
+  3. Fit a graphical model to data,
+  4. Select the 'best' graphical model from a pool of models, and
+  5. Evaluate the graphical model.
+
+
+
+### Specify a graphical model
+The first set of functions are: {`create_random_graph`, `plot_graph`, `build_conditional`}. The first function generates a random adjacency matrix, the second plots it out, and the third completes the specification for simulation purposes.
+```{r, eval=T, results='asis', fig.height=4, fig.width=4}
 library(magrittr)
 library(glmGraph)
 
-# Create graph
-rgraph <- create_random_graph(10, p = 0.2)
-plot_graph(rgraph, vertex.size = 30)
+# Create a random graph
+num_nodes <- 10
+graph_connectedness <- 0.2  #probability of having an edge between two nodes
+rgraph <- create_random_graph(num_nodes, p = graph_connectedness)
+knitr::kable(rgraph)
 
-# Factorise the joint density into products of conditionals
+# Plot graph
+plot_graph(rgraph, vertex.size = 30)  #vertex.size is the plot-size of the nodes
+```
+Two steps are needed to complete the specification of the graphical model.
+The first is to factorise the target multivariate density according to the graph into `num_nodes` components, and the second is to specify a GLM family for each component. 
+```{r, eval=T, results='asis', fig.height=4, fig.width=4}
+# Specify the dependence with the GLM family 
+# 1. factorise the graph
 table0 <- factorise(rgraph)
+knitr::kable(table0)
+# 2. specify a GLM family for each component
+family <- c(rep("gaussian", 7), rep("gamma", 3))
+table0 <- build_conditional(table0, family = family)
+```
+Now you have a fully specified graph and are ready for data simulation. Note that the coefficients of the linear predictor are randomly generated; should you want to change them, you can simply change the entries in the 'beta' column of the table. (The first coefficient is always the intercept.)
 
-# Specify the distribution of the conditionals
-m <- 7
-family <- c(rep("gaussian", m), rep("gamma", nrow(table0) - m))
-table0 %<>% build_conditional(family = family)
 
+### Simulate data from the graph
+The second set of functions are: {`factorise`, `build_conditional`, `simulate_data`}.
+```{r, eval=T, results='asis', fig.height=4, fig.width=4}
 # Simulate data
-data0 <- simulate_data(table0, n = 100)
+data0 <- simulate_data(table0, n = 2000)
 ```
 
-Now let's fit a model using the graph and see if we can recover the parameter coefficients.
-```{r, eval = F}
-# Create a new table to fit data
+
+
+### Fit the graphical model to data
+```{r, eval=T, results='asis', fig.height=4, fig.width=4}
+# Create a new table to fit the data
 table1 <- rgraph %>% factorise() %>% build_conditional(family)
 table1 %<>% MLE_graph(data0)
 
 # Compare the truth and the fitted model
-data.frame(cbind(true_beta = table0$beta, fitted_beta = table1$beta))
-compute_likelihood(table0, data0)
-get_model_likelihood(table1)
-compute_likelihood(table1, data0)
+knitr::kable(data.frame(cbind(
+    true_beta = table0$beta %>% purrr::map(~round(.x, 3)), 
+    fitted_beta = table1$beta %>% purrr::map(~round(.x, 3))
+)))
 ```
 
 
-Experiment 
-We are interested in the following question: Given the true graph structure, can the method recover the parameters values?
+```
+compute_likelihood(table0, data0)
+get_model_likelihood(table1)
+```
+
+
+
+### Select the 'best' model
+We have seen that given the true graph structure, the method recovers the parameters values quite well. However, in real-world situation, the graph structure is usually unknown, and there are $2^(n \cdot (n-1))$ possible graphs ($n$ is the number of nodes) to search through. This is computationally infeasible; but with sampling technique (Gibbs sampler), we can reduce the computation to $O(n^2)$ and have good chance of finding the right structure. 
+Note: right structure is the true structure if the true structure is in our class of graphs. otherwise, right structure refers to the best fitting structure in our graph class.
+```{r, eval = F}
+s <- select_graph(data0, lambda = 1 / sqrt(nrow(data0)))
+```
+
+
+
+### Evaluate the model
+
+
+
+
+## Experiments and Examples
+### Simulated data example
+Here we simulate data to illustrate usage and the empirical performance of the method.
+
+**Given the true graph structure, can we recover all the parameters values?**
+
+Now let's fit a model using the graph and see if we can recover the parameter coefficients.
+
+**Given the data, can we recover the graph structure?**
+
+simulation setup:
+measure:
+
+
+
+### Real data example
+
+
+
+
+
+
+
+
