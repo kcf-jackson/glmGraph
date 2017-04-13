@@ -97,7 +97,7 @@ family2invLinkFUN <- function(family, ...) {
   parameters <- switch(
     family,
     "gaussian" = gaussian()$linkinv,
-    "gamma" = Gamma()$linkinv,
+    "gamma" = Gamma(link = log)$linkinv,
     "poisson" = poisson()$linkinv,
     "binomial" = binomial()$linkinv
     # "multinomial" = VGAM::multinomial()@linkinv,
@@ -135,7 +135,7 @@ mean2parameters <- function(parameters, mu, family) {
 #' @keywords internal
 dispersion2parameters <- function(parameters, dispersion, family) {
   if (family == "gaussian") {
-    parameters$sd <- dispersion
+    parameters$sd <- sqrt(dispersion)
   } else if (family == "gamma") {
     parameters$shape <- 1 / dispersion
   }

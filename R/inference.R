@@ -24,7 +24,6 @@ MLE_graph <- function(table0, data0) {
     current$beta[[1]] <- get_parameters(glm_model)
     current$parameters[[1]] %<>%
       dispersion2parameters(glm_model$dispersion, c_family)
-
     table0[i, ] <- current
     # setTxtProgressBar(pb, i)
   }
@@ -40,7 +39,12 @@ MLE_graph <- function(table0, data0) {
 
 #' @keywords internal
 fit_glm <- function(x, y, family, engine) {
-  engine(as.matrix(x), y = y, family = match.fun(family)())
+  if (family == "gamma") {
+    family <- Gamma(link = log)
+  } else {
+    family = match.fun(family)()
+  }
+  engine(as.matrix(x), y = y, family = family)
 }
 
 #' @keywords internal

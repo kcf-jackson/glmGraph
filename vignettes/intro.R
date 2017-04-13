@@ -10,11 +10,12 @@
 #  table0 <- factorise(rgraph)
 #  
 #  # Specify the distribution of the conditionals
-#  family <- rep("gaussian", nrow(table0))
+#  m <- 7
+#  family <- c(rep("gaussian", m), rep("gamma", nrow(table0) - m))
 #  table0 %<>% build_conditional(family = family)
 #  
 #  # Simulate data
-#  data0 <- simulate_data(table0, n = 1000)
+#  data0 <- simulate_data(table0, n = 100)
 
 ## ---- eval = F-----------------------------------------------------------
 #  # Create a new table to fit data
@@ -25,4 +26,5 @@
 #  data.frame(cbind(true_beta = table0$beta, fitted_beta = table1$beta))
 #  compute_likelihood(table0, data0)
 #  get_model_likelihood(table1)
+#  compute_likelihood(table1, data0)
 

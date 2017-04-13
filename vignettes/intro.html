@@ -12,7 +12,7 @@
 
 <meta name="author" content="Jackson Kwok" />
 
-<meta name="date" content="2017-04-12" />
+<meta name="date" content="2017-04-13" />
 
 <title>Basic usage</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Basic usage</h1>
 <h4 class="author"><em>Jackson Kwok</em></h4>
-<h4 class="date"><em>2017-04-12</em></h4>
+<h4 class="date"><em>2017-04-13</em></h4>
 
 
 
@@ -88,11 +88,12 @@ rgraph &lt;-<span class="st"> </span><span class="kw">create_random_graph</span>
 table0 &lt;-<span class="st"> </span><span class="kw">factorise</span>(rgraph)
 
 <span class="co"># Specify the distribution of the conditionals</span>
-family &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;gaussian&quot;</span>, <span class="kw">nrow</span>(table0))
+m &lt;-<span class="st"> </span><span class="dv">7</span>
+family &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;gaussian&quot;</span>, m), <span class="kw">rep</span>(<span class="st">&quot;gamma&quot;</span>, <span class="kw">nrow</span>(table0) -<span class="st"> </span>m))
 table0 %&lt;&gt;%<span class="st"> </span><span class="kw">build_conditional</span>(<span class="dt">family =</span> family)
 
 <span class="co"># Simulate data</span>
-data0 &lt;-<span class="st"> </span><span class="kw">simulate_data</span>(table0, <span class="dt">n =</span> <span class="dv">1000</span>)</code></pre></div>
+data0 &lt;-<span class="st"> </span><span class="kw">simulate_data</span>(table0, <span class="dt">n =</span> <span class="dv">100</span>)</code></pre></div>
 <p>Now let’s fit a model using the graph and see if we can recover the parameter coefficients.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create a new table to fit data</span>
 table1 &lt;-<span class="st"> </span>rgraph %&gt;%<span class="st"> </span><span class="kw">factorise</span>() %&gt;%<span class="st"> </span><span class="kw">build_conditional</span>(family)
@@ -101,7 +102,8 @@ table1 %&lt;&gt;%<span class="st"> </span><span class="kw">MLE_graph</span>(data
 <span class="co"># Compare the truth and the fitted model</span>
 <span class="kw">data.frame</span>(<span class="kw">cbind</span>(<span class="dt">true_beta =</span> table0$beta, <span class="dt">fitted_beta =</span> table1$beta))
 <span class="kw">compute_likelihood</span>(table0, data0)
-<span class="kw">get_model_likelihood</span>(table1)</code></pre></div>
+<span class="kw">get_model_likelihood</span>(table1)
+<span class="kw">compute_likelihood</span>(table1, data0)</code></pre></div>
 <p>Experiment We are interested in the following question: Given the true graph structure, can the method recover the parameters values?</p>
 
 
