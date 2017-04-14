@@ -3,7 +3,7 @@ permute_column <- function(data0) {
   data0[,sample(ncol(data0))]
 }
 
-#'@keywords internal
+#' @keywords internal
 create_reference_table <- function() {
   data.frame(
     family = c("gaussian", "gamma", "poisson", "binomial", "multinomial",
@@ -15,13 +15,22 @@ create_reference_table <- function() {
     inverse_link_FUN = c("gaussian()$linkinv", "Gamma()$linkinv", "poisson()$linkinv",
                          "binomial()$linkinv", "multinomial()@linkinv",
                          "VGAM::betabinomial()@linkinv", "quasipoisson()$linkinv"),
-    parameters = cbind(parameters = list(
-      list("mean", "sd"), list("shape", "rate"), list("lambda"),
-      list("size", "prob"), list("size", "prob"), list("size", "shape1", "shape2"),
-      list("size", "mu")
-    )),
+    # parameters = cbind(parameters = list(
+    #   list("mean", "sd"), list("shape", "rate"), list("lambda"),
+    #   list("size", "prob"), list("size", "prob"), list("size", "shape1", "shape2"),
+    #   list("size", "mu")
+    # )),
     stringsAsFactors = FALSE
   )
+}
+
+#' @keywords internal
+parameters2text <- function(parameters) {
+  parameter_names <- names(parameters)
+  parameter_values <- round(unlist(parameters), 4)
+  res <- paste(parameter_names, parameter_values, sep = " = ")
+  res <- paste(res, collapse = ", ")
+  res
 }
 
 #' @keywords internal
