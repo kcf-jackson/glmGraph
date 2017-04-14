@@ -26,7 +26,7 @@ select_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
   }
   current_model <- fit_graph(rgraph, family, data0)
   current_likelihood <- get_model_likelihood(current_model) - sum(rgraph)
-  current_factorisation <- build_conditional(factorise(rgraph), family)
+  current_factorisation <- essential_spec(rgraph, family)
   print(current_likelihood)
   #---------------Variables for model selection--------------------
   best_measure_graph <- list(rgraph = rgraph, score = current_likelihood)
@@ -58,7 +58,7 @@ select_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
           rgraph[j,i] <- rgraph[i,j]
         } else {
           current_likelihood <- new_likelihood
-          current_factorisation <- build_conditional(factorise(rgraph), family)
+          current_factorisation <- essential_spec(rgraph, family)
         }
       }
     }
@@ -117,8 +117,15 @@ check_family <- function(family) {
 
 
 #' @keywords internal
+essential_spec <- function(rgraph, family) {
+  data.frame(factorise(rgraph), family, stringsAsFactors = F)
+}
+
+
+#' @keywords internal
 fit_graph <- function(rgraph, family, data0) {
-  rgraph %>% factorise() %>% build_conditional(family) %>% MLE_graph(data0)
+  full_spec <- build_conditional(factorise(rgraph), family)
+  MLE_graph(full_spec, data0)
 }
 
 
@@ -128,13 +135,13 @@ flip_bit <- function(x) {
 }
 
 
-#' @keywords internal
-compute_GLM_full_class_likelihood <- function(data0) {
-  # "gamma", gamma_deriv2, gamma_deriv3,
-  # "poisson", poisson_deriv2, poisson_deriv3,
-  # "binomial", binomial_deriv2, binomial_deriv3
-  # return(list(family_name, likelihood))
-}
+# #' @keywords internal
+# compute_GLM_full_class_likelihood <- function(data0) {
+#   "gamma", gamma_deriv2, gamma_deriv3,
+#   "poisson", poisson_deriv2, poisson_deriv3,
+#   "binomial", binomial_deriv2, binomial_deriv3
+#   return(list(family_name, likelihood))
+# }
 
 
 #' Detect variable type and decide what family of distribution to use
