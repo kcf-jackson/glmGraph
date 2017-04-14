@@ -4,7 +4,8 @@
 \alias{select_graph}
 \title{Model selection for GLM graph}
 \usage{
-select_graph(data0, p = 0.2, lambda = 1, num_iter = 100)
+select_graph(data0, p = 0.2, lambda = 1, num_iter = 100,
+  graph_init = "random")
 }
 \arguments{
 \item{data0}{dataframe; the data.}
@@ -14,6 +15,11 @@ select_graph(data0, p = 0.2, lambda = 1, num_iter = 100)
 \item{lambda}{Tuning parameter for gibbs sampler.}
 
 \item{num_iter}{number of iterations for gibbs sampler.}
+
+\item{graph_init}{characters string; one of "random", "correlation" and "mutual".
+"random" generates a graph randomly. "correlation" computes the pairwise correlation
+between variables and keeps the ones above the third quartile. "mutual" is similar to
+"correlation" except it uses pairwise mutual information instead.}
 }
 \description{
 Model selection for GLM graph

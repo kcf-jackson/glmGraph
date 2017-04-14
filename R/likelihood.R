@@ -43,7 +43,10 @@ eval_marginal_likelihood <- function(marginal, resp_variable, covariates) {
   ) %>% sum()
 }
 
-#' @keywords internal
+#' Get likelihood from a fitted model
+#' @param table0 data.frame; the fitted graph from 'MLE_graph'.
+#' @return The loglikelihood value.
+#' @export
 get_model_likelihood <- function(table0) {
   attr(table0, "loglikelihood")
 }

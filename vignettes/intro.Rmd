@@ -10,7 +10,7 @@ vignette: >
 ---
 
 ## Introduction
-The package "glmGraph" is about learning an approximate multivariate distribution from data. Suppose the target multivariate distribution has a density $f(x_1, x_2, ..., x_n)$, we model it using a graphical model with parametric components. 
+The goal of the "glmGraph" package is to learn an approximate multivariate distribution from data. Suppose the target multivariate distribution has a density $f(x_1, x_2, ..., x_n)$, we model it using a graphical model with parametric components. 
 
 For sake of clarity, we briefly introduce the graphical model. A graphical model is a statistical model specified by a graph. A graph consists of nodes and edges: nodes represent variables, and an edge between two nodes represents dependence between two variables. An example of a graph is shown in Figure \ref{graph_example_1}. To model the data with the graphical model, we ...
 
