@@ -16,9 +16,3 @@ compute_likelihood(table0, data0, log = TRUE)
 \description{
 Compute the likelihood for a dataset given the complete factorisation table
 }
-\note{
-This function computes the loglikelihood directly from the data, rather than
-from the AIC values of the fitted model, so that could be slight rounding difference
-to the likelihood extracted from the fitted model. One should expect the difference
-to be less than the number of nodes.
-}

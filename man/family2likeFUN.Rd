@@ -2,11 +2,69 @@
 % Please edit documentation in R/family.R
 \name{family2likeFUN}
 \alias{family2likeFUN}
-\title{Return the density function of a family object}
+\title{#' @keywords internal
+family2FUN <- function(family) {
+  if (family == "gaussian") {
+    df_FUN <- cbind(
+      like_FUN = dnorm, sim_FUN = rnorm,
+      invLink_FUN = gaussian()$linkinv,
+      parameters = list(list(mean = 0, sd = 1))
+    )
+  } else if (family == "gamma") {
+    df_FUN <- cbind(
+      like_FUN = dgamma, sim_FUN = rgamma,
+      invLink_FUN = Gamma(link = log)$linkinv,
+      parameters = list(list(shape = 1, rate = 1))
+    )
+  } else if (family == "poisson") {
+    df_FUN <- cbind(
+      like_FUN = dpois, sim_FUN = rpois,
+      invLink_FUN = poisson()$linkinv,
+      parameters = list(list(lambda = 1))
+    )
+  } else if (family == "binomial") {
+    df_FUN <- cbind(
+      like_FUN = dbinom, sim_FUN = rbinom,
+      invLink_FUN = binomial()$linkinv,
+      parameters = list(list(size = 1, prob = 0.5))
+    )
+  }
+  df_FUN
+}
+Return the density function of a family object}
 \usage{
 family2likeFUN(family, ...)
 }
 \description{
+#' @keywords internal
+family2FUN <- function(family) {
+  if (family == "gaussian") {
+    df_FUN <- cbind(
+      like_FUN = dnorm, sim_FUN = rnorm,
+      invLink_FUN = gaussian()$linkinv,
+      parameters = list(list(mean = 0, sd = 1))
+    )
+  } else if (family == "gamma") {
+    df_FUN <- cbind(
+      like_FUN = dgamma, sim_FUN = rgamma,
+      invLink_FUN = Gamma(link = log)$linkinv,
+      parameters = list(list(shape = 1, rate = 1))
+    )
+  } else if (family == "poisson") {
+    df_FUN <- cbind(
+      like_FUN = dpois, sim_FUN = rpois,
+      invLink_FUN = poisson()$linkinv,
+      parameters = list(list(lambda = 1))
+    )
+  } else if (family == "binomial") {
+    df_FUN <- cbind(
+      like_FUN = dbinom, sim_FUN = rbinom,
+      invLink_FUN = binomial()$linkinv,
+      parameters = list(list(size = 1, prob = 0.5))
+    )
+  }
+  df_FUN
+}
 Return the density function of a family object
 }
 \keyword{internal}

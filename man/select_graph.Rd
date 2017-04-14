@@ -4,7 +4,7 @@
 \alias{select_graph}
 \title{Model selection for GLM graph}
 \usage{
-select_graph(data0, p = 0.2, lambda = 1, num_iter = 100,
+select_graph(data0, p = 0.2, lambda, num_iter = 100,
   graph_init = "random")
 }
 \arguments{
