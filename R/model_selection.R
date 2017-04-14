@@ -8,10 +8,14 @@
 #'between variables and keeps the ones above the third quartile. "mutual" is similar to
 #'"correlation" except it uses pairwise mutual information instead.
 #' @export
-select_graph <- function(data0, p = 0.2, lambda = 1, num_iter = 100,
+select_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
                          graph_init = "random") {
-  if (!all(sapply(head(data0), is.numeric)))
+  if (!all(sapply(head(data0), is.numeric))) {
     stop("data has to be all numerics at the moment.")
+  }
+  if (missing(lambda)) {
+    lambda <- 1 / nrow(data0)
+  }
   num_var <- ncol(data0)
   rgraph <- create_random_graph(num_var, p = p)
   nr <- nrow(rgraph)
@@ -22,6 +26,7 @@ select_graph <- function(data0, p = 0.2, lambda = 1, num_iter = 100,
   }
   current_model <- fit_graph(rgraph, family, data0)
   current_likelihood <- get_model_likelihood(current_model) - sum(rgraph)
+  current_factorisation <- rgraph %>% factorise() %>% build_conditional(family)
   print(current_likelihood)
   #---------------Variables for model selection--------------------
   best_measure_graph <- list(rgraph = rgraph, score = current_likelihood)
@@ -36,8 +41,14 @@ select_graph <- function(data0, p = 0.2, lambda = 1, num_iter = 100,
       for (j in (i+1):nc) {
         rgraph[i,j] %<>% flip_bit()
         rgraph[j,i] <- rgraph[i,j]
+
         new_model <- fit_graph(rgraph, family, data0)
         new_likelihood <- get_model_likelihood(new_model) - sum(rgraph)
+
+        new_likelihood2 <- current_likelihood +
+          add_new_likelihood(current_factorisation[i,], j, rgraph[i,j], data0)
+
+        print(new_likelihood - new_likelihood2)
         #-------------------Update best graph----------------------
         has_improved <- (new_likelihood > best_measure_graph$score)
         if (has_improved) {
@@ -47,10 +58,14 @@ select_graph <- function(data0, p = 0.2, lambda = 1, num_iter = 100,
           best_measure_graph$score <- new_likelihood
         }
         #----------------------------------------------------------
-        rgraph[i,j] <- gibbs_update(
-          lambda, c(current_likelihood, new_likelihood)
-        ) - 1
-        rgraph[j,i] <- rgraph[i,j]
+        jump <- gibbs_update(lambda, c(current_likelihood, new_likelihood))
+        if (jump == 1) {
+          rgraph[i,j] %<>% flip_bit()
+          rgraph[j,i] <- rgraph[i,j]
+        } else {
+          current_likelihood <- new_likelihood
+          current_factorisation <- rgraph %>% factorise() %>% build_conditional(family)
+        }
       }
     }
     #-------------------Update frequency graph---------------------
@@ -103,9 +118,16 @@ check_family <- function(family) {
   )
 }
 
+
 #' @keywords internal
+# fit_graph <- function(rgraph, family, data0) {
+#   rgraph %>% factorise() %>% build_conditional(family) %>% MLE_graph(data0)
+# }
 fit_graph <- function(rgraph, family, data0) {
-  rgraph %>% factorise() %>% build_conditional(family) %>% MLE_graph(data0)
+  a <- factorise(rgraph)
+  b <- build_conditional(a, family)
+  c <- MLE_graph(b, data0)
+  c
 }
 
 
@@ -148,3 +170,29 @@ analyze_variable <- function(x0) {
   }
   return("unknown")
 }
+
+
+#' @keywords internal
+add_new_likelihood <- function(current, j, state, data0) {
+  fixed <- current$fixed[[1]]
+  given <- current$given[[1]]
+  family <- current$family[[1]]
+  current_marginal_likelihood <- fit_glm(
+    y = data0[,fixed], x = cbind(intercept = 1, data0[,given]),
+    family = family, engine = speedglm::speedglm.wfit
+  ) %>% use_series("logLik")
+
+  if (state == 1) {
+    new_given <- sort(c(given, j))  #Include a new edge in the graph
+  } else {
+    new_given <- setdiff(given, j)  #Exclude an existing edge from the graph
+  }
+  new_marginal_likelihood <- fit_glm(
+    y = data0[,fixed], x = cbind(intercept = 1, data0[,new_given]),
+    family = family, engine = speedglm::speedglm.wfit
+  ) %>% use_series("logLik")
+
+  edge_num_adjustment <- ifelse(state == 1, -2, 2)
+  new_marginal_likelihood - current_marginal_likelihood + edge_num_adjustment
+}
+
