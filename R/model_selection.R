@@ -26,7 +26,7 @@ select_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
   }
   current_model <- fit_graph(rgraph, family, data0)
   current_likelihood <- get_model_likelihood(current_model) - sum(rgraph)
-  current_factorisation <- rgraph %>% factorise() %>% build_conditional(family)
+  current_factorisation <- build_conditional(factorise(rgraph), family)
   print(current_likelihood)
   #---------------Variables for model selection--------------------
   best_measure_graph <- list(rgraph = rgraph, score = current_likelihood)
@@ -41,14 +41,8 @@ select_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
       for (j in (i+1):nc) {
         rgraph[i,j] %<>% flip_bit()
         rgraph[j,i] <- rgraph[i,j]
-
-        new_model <- fit_graph(rgraph, family, data0)
-        new_likelihood <- get_model_likelihood(new_model) - sum(rgraph)
-
-        new_likelihood2 <- current_likelihood +
+        new_likelihood <- current_likelihood +
           add_new_likelihood(current_factorisation[i,], j, rgraph[i,j], data0)
-
-        print(new_likelihood - new_likelihood2)
         #-------------------Update best graph----------------------
         has_improved <- (new_likelihood > best_measure_graph$score)
         if (has_improved) {
@@ -64,7 +58,7 @@ select_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
           rgraph[j,i] <- rgraph[i,j]
         } else {
           current_likelihood <- new_likelihood
-          current_factorisation <- rgraph %>% factorise() %>% build_conditional(family)
+          current_factorisation <- build_conditional(factorise(rgraph), family)
         }
       }
     }
@@ -123,14 +117,8 @@ check_family <- function(family) {
 
 
 #' @keywords internal
-# fit_graph <- function(rgraph, family, data0) {
-#   rgraph %>% factorise() %>% build_conditional(family) %>% MLE_graph(data0)
-# }
 fit_graph <- function(rgraph, family, data0) {
-  a <- factorise(rgraph)
-  b <- build_conditional(a, family)
-  c <- MLE_graph(b, data0)
-  c
+  rgraph %>% factorise() %>% build_conditional(family) %>% MLE_graph(data0)
 }
 
 
@@ -183,7 +171,7 @@ add_new_likelihood <- function(current, j, state, data0) {
   current_marginal_likelihood <- fit_glm(
     y = data0[,fixed], x = cbind(intercept = 1, data0[,given]),
     family = family, engine = speedglm::speedglm.wfit
-  ) %>% use_series("logLik")
+  )$logLik
 
   if (state == 1) {
     new_given <- sort(c(given, j))  #Include a new edge in the graph
@@ -193,7 +181,7 @@ add_new_likelihood <- function(current, j, state, data0) {
   new_marginal_likelihood <- fit_glm(
     y = data0[,fixed], x = cbind(intercept = 1, data0[,new_given]),
     family = family, engine = speedglm::speedglm.wfit
-  ) %>% use_series("logLik")
+  )$logLik
 
   edge_num_adjustment <- ifelse(state == 1, -2, 2)
   new_marginal_likelihood - current_marginal_likelihood + edge_num_adjustment

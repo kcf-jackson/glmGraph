@@ -5,7 +5,6 @@
 #' @return dataframe; the complete factorisation table with fitted beta.
 #' @export
 MLE_graph <- function(table0, data0) {
-  engine <- speedglm::speedglm.wfit
   nr <- nrow(table0)
   loglikelihood <- 0
   # pb <- txtProgressBar(1, nr, style=3)
@@ -18,7 +17,8 @@ MLE_graph <- function(table0, data0) {
     glm_model <- fit_glm(
       x = cbind(intercept = 1, data0[,c_given_index]),  #intercept
       y = data0[,c_fixed_index],
-      family = c_family, engine = engine
+      family = c_family,
+      engine = speedglm::speedglm.wfit
     )
     loglikelihood <- loglikelihood + glm_model$logLik   #intercept
     current$beta[[1]] <- get_parameters(glm_model)
@@ -30,12 +30,6 @@ MLE_graph <- function(table0, data0) {
   attr(table0, "loglikelihood") <- loglikelihood
   table0
 }
-
-#' # Helper functions
-#' #' @keywords internal
-#' get_nll_from_aic <- function(aic_score, num_var) {
-#'   (aic_score - 2*num_var) / (-2)
-#' }
 
 #' @keywords internal
 fit_glm <- function(x, y, family, engine) {

@@ -8,6 +8,7 @@
 build_conditional <- function(df0, family) {
   if (missing(family))
     family = rep("gaussian", nrow(df0))
+
   df0 %>%
     dplyr::mutate(
       family = family,
