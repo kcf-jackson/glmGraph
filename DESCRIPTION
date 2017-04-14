@@ -1,6 +1,6 @@
 Package: glmGraph
 Title: Graphical models with Generalised Linear Model (GLM)
-Version: 0.1.0
+Version: 0.2.5
 Authors@R: c(
     person("Jackson", "Kwok", email = "kcf.jackson@gmail.com", role = c("aut", "cre")),
     person("Felix", "Leung", role = c("aut"))
@@ -15,7 +15,8 @@ Imports:
     igraph,
     purrr,
     magrittr,
-    dplyr
+    dplyr,
+    speedglm
 License: file LICENSE
 Encoding: UTF-8
 LazyData: true

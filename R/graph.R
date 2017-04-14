@@ -34,6 +34,8 @@ make_symmetric <- function(m0) {
 
 #' This function plots graph from the function "create_random_graph".
 #' @param rgraph matrix; output from "create_random_graph".
+#' @param vertex.size plot size of the node.
+#' @param ... extra parameters to be passed to the 'igraph::plot.igraph' function.
 #' @export
 plot_graph <- function(rgraph, vertex.size = 30, ...) {
   rgraph %>%

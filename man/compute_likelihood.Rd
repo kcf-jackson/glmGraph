@@ -2,8 +2,7 @@
 % Please edit documentation in R/likelihood.R
 \name{compute_likelihood}
 \alias{compute_likelihood}
-\title{Compute the likelihood for a single data-point given the complete
-factorisation table}
+\title{Compute the likelihood for a dataset given the complete factorisation table}
 \usage{
 compute_likelihood(table0, data0, log = TRUE)
 }
@@ -15,7 +14,11 @@ compute_likelihood(table0, data0, log = TRUE)
 \item{log}{TRUE / FALSE; returns loglikelihood / likelihood.}
 }
 \description{
-Compute the likelihood for a single data-point given the complete
-factorisation table
+Compute the likelihood for a dataset given the complete factorisation table
 }
-\keyword{internal}
+\note{
+This function computes the loglikelihood directly from the data, rather than
+from the AIC values of the fitted model, so that could be slight rounding difference
+to the likelihood extracted from the fitted model. One should expect the difference
+to be less than the number of nodes.
+}
