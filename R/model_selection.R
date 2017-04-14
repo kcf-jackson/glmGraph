@@ -80,8 +80,8 @@ select_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
 #' @keywords internal
 initialise_graph <- function(data0, method = "random", threshold = 0.75) {
   method <- tolower(method)
-  if (!(method %in% c("random", "correlation", "mutual"))) {
-    stop("The method must be one of 'random', 'correlation' and 'mutual'.")
+  if (!(method %in% c("random", "correlation", "mutual", "copula"))) {
+    stop("The method must be one of 'random', 'correlation', 'mutual' and 'copula.")
   }
   num_nodes <- ncol(data0)
   if (method == "random") {
@@ -96,6 +96,9 @@ initialise_graph <- function(data0, method = "random", threshold = 0.75) {
     diag(g) <- 0
     g <- (g > quantile(g, threshold))
     diag(g) <- 0
+  } else if (method == "copula") {
+    g <- copula_cor(data0)
+    g <- (g > quantile(g, threshold))
   }
   g
 }
