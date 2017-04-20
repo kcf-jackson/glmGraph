@@ -8,13 +8,13 @@
 #'between variables and keeps the ones above the third quartile. "mutual" is similar to
 #'"correlation" except it uses pairwise mutual information instead.
 #' @export
-select_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
+learn_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
                          graph_init = "random") {
   if (!all(sapply(head(data0), is.numeric))) {
     stop("data has to be all numerics at the moment.")
   }
   if (missing(lambda)) {
-    lambda <- 1 / nrow(data0)
+    lambda <- 1 / sqrt(nrow(data0))
   }
   num_var <- ncol(data0)
   rgraph <- create_random_graph(num_var, p = p)
@@ -46,7 +46,7 @@ select_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
         #-------------------Update best graph----------------------
         has_improved <- (new_likelihood > best_measure_graph$score)
         if (has_improved) {
-          cat("Improved!. Loglikelihood:", new_likelihood, "\n")
+          cat("Improved! Loglikelihood:", new_likelihood, "\n")
           plot_graph(rgraph)
           best_measure_graph$rgraph <- rgraph
           best_measure_graph$score <- new_likelihood
@@ -67,6 +67,8 @@ select_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
     #--------------------------------------------------------------
     setTxtProgressBar(pb, iter)
   }
+  best_measure_graph$family <- family
+  frequency_graph$rgraph <- frequency_graph$rgraph / num_iter
   list(best_model = best_measure_graph, freq_graph = frequency_graph)
 }
 
@@ -100,6 +102,7 @@ initialise_graph <- function(data0, method = "random", threshold = 0.75) {
 
 #' @keywords internal
 gibbs_update <- function(lambda, score_vec) {
+  score_vec <- score_vec - score_vec[1]   #protect against divide by 0
   prob_vec <- exp(lambda * score_vec)
   prob_vec <- prob_vec / sum(prob_vec)
   sample(seq_along(score_vec), size = 1, prob = prob_vec)

@@ -13,6 +13,10 @@ build_conditional(df0, family)
 distribution to be used. It must be one of c("gaussian", "gamma", "poisson",
 "binomial")}
 }
+\value{
+A dataframe containing the full specification including the factorisation
+and all the information about the asssociated GLM family.
+}
 \description{
 Specify the distribution for each conditional density
 }
