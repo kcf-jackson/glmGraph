@@ -38,3 +38,16 @@ knitr::kable(data.frame(cbind(
 ## ---- eval = F-----------------------------------------------------------
 #  s <- select_graph(data0, lambda = 1 / sqrt(nrow(data0)))
 
+## ---- eval = F-----------------------------------------------------------
+#  # Create graph
+#  num_nodes <- 5
+#  rgraph <- create_random_graph(num_nodes, p = 0.2)
+#  plot_graph(rgraph, vertex.size = 30)
+#  
+#  # Specify the distribution of the conditionals
+#  m <- 3
+#  family <- c(rep("gaussian", m), rep("gamma", num_nodes - m))
+#  table0 <- rgraph %>% factorise() %>% build_conditional(family = family)
+#  data0 <- simulate_data(table0, n = 1000)
+#  best_model <- select_graph(data0, lambda = 1 / nrow(data0))
+

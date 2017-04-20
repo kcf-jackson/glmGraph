@@ -1,47 +1,32 @@
-# USE FAMILY BY FAMILY PARTITION
-# family_reference_table <- function() {
-#   data.frame(
-#     family = c("gaussian", "gamma", "poisson", "binomial", "multinomial",
-#       "quadibinomial", "quasipoisson"),
-#     like_FUN = list(
-#       "gaussian" = dnorm,
-#       "gamma" = dgamma,
-#       "poisson" = dpois,
-#       "binomial" = dbinom,
-#       "multinomial" = dmultinom,
-#       "quasibinomial" = VGAM::dbetabinom.ab,
-#       "quasipoisson" = dnbinom
-#     ),
-#     sim_FUN = list(
-#       "gaussian" = rnorm,
-#       "gamma" = rgamma,
-#       "poisson" = rpois,
-#       "binomial" = rbinom,
-#       "multinomial" = rmultinom,
-#       "quasibinomial" = VGAM::rbetabinom.ab,
-#       "quasipoisson" = rnbinom
-#     ),
-#     invLink_FUN = list(
-#       "gaussian" = gaussian()$linkinv,
-#       "gamma" = Gamma()$linkinv,
-#       "poisson" = poisson()$linkinv,
-#       "binomial" = binomial()$linkinv,
-#       "multinomial" = multinomial()@linkinv,
-#       "quasibinomial" = VGAM::betabinomial()@linkinv,
-#       "quasipoisson" = quasipoisson()$linkinv
-#     ),
-#     parameters = list(
-#       list(mean = 0, sd = 1),
-#       list(shape = 1, rate = 1),
-#       list(lambda = 1),
-#       list(size = 1, prob = 0.5),
-#       list(size = 1, prob = rep(0.5, 5)),
-#       list(size = 1, shape1 = 1, shape2 = 1),
-#       list(size = 1, mu = 1)
-#     )
-#   )
-# }
-
+#' #' @keywords internal
+#' family2FUN <- function(family) {
+#'   if (family == "gaussian") {
+#'     df_FUN <- cbind(
+#'       like_FUN = dnorm, sim_FUN = rnorm,
+#'       invLink_FUN = gaussian()$linkinv,
+#'       parameters = list(list(mean = 0, sd = 1))
+#'     )
+#'   } else if (family == "gamma") {
+#'     df_FUN <- cbind(
+#'       like_FUN = dgamma, sim_FUN = rgamma,
+#'       invLink_FUN = Gamma(link = log)$linkinv,
+#'       parameters = list(list(shape = 1, rate = 1))
+#'     )
+#'   } else if (family == "poisson") {
+#'     df_FUN <- cbind(
+#'       like_FUN = dpois, sim_FUN = rpois,
+#'       invLink_FUN = poisson()$linkinv,
+#'       parameters = list(list(lambda = 1))
+#'     )
+#'   } else if (family == "binomial") {
+#'     df_FUN <- cbind(
+#'       like_FUN = dbinom, sim_FUN = rbinom,
+#'       invLink_FUN = binomial()$linkinv,
+#'       parameters = list(list(size = 1, prob = 0.5))
+#'     )
+#'   }
+#'   df_FUN
+#' }
 
 #' Return the density function of a family object
 #' @keywords internal

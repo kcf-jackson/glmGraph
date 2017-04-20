@@ -8,6 +8,7 @@
 build_conditional <- function(df0, family) {
   if (missing(family))
     family = rep("gaussian", nrow(df0))
+
   df0 %>%
     dplyr::mutate(
       family = family,
@@ -27,17 +28,10 @@ build_conditional <- function(df0, family) {
 #' @param table0 dataframe; the complete factorisation table; output from
 #' build_conditional.
 #' @export
-# To-do: Join values with parameters names
 print_summary <- function(table0) {
   ref_table <- create_reference_table()
   table0 %>%
     magrittr::extract(c("fixed", "given", "family", "beta")) %>%
-    dplyr::left_join(ref_table, by = "family")
+    dplyr::left_join(ref_table, by = "family") %>%
+    dplyr::mutate(parameters = purrr::map(table0$parameters, parameters2text))
 }
-
-#' #' Optimise the "build_conditional" function for gibbs sampler model selection.
-#' #' @keywords internal
-#' fast_build_conditional <- function(df0, family_df0) {
-#'   data.frame(df0, family_df0) %>%
-#'     dplyr::mutate(beta = purrr::map(df0$given, ~rnorm(length(.x) + 1)))  #intercept
-#' }

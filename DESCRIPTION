@@ -16,7 +16,9 @@ Imports:
     purrr,
     magrittr,
     dplyr,
-    speedglm
+    speedglm,
+    infotheo,
+    proxy
 License: file LICENSE
 Encoding: UTF-8
 LazyData: true
