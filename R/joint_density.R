@@ -3,6 +3,8 @@
 #' @param family Vector of characters string; names of the exponential family of
 #' distribution to be used. It must be one of c("gaussian", "gamma", "poisson",
 #' "binomial")
+#' @return A dataframe containing the full specification including the factorisation
+#' and all the information about the asssociated GLM family.
 #' @export
 # To-do: Add support to "multinomial", "quasibinomial", "quasipoisson"
 build_conditional <- function(df0, family) {
