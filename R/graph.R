@@ -91,36 +91,36 @@ compare_graphs <- function(m1, m2,  mode = "undirected",
   m3 <- m1 + m2
   m3[m3 != 2] <- 0  #matched edges
   matched_graph <- adj_to_graph(m3 / 2, mode)
-  V(matched_graph)$name <- paste("X", seq(num_nodes), sep = "")
-  E(matched_graph)$color <- "green"
+  igraph::V(matched_graph)$name <- paste("X", seq(num_nodes), sep = "")
+  igraph::E(matched_graph)$color <- "green"
 
   m4 <- m1 + m3 - m2
   m4[m4 != 1] <- 0
   unmatched_graph <- adj_to_graph(m4, mode)  #unmatched edges
-  V(unmatched_graph)$name <- paste("X", seq(num_nodes), sep = "")
-  E(unmatched_graph)$color <- "black"
+  igraph::V(unmatched_graph)$name <- paste("X", seq(num_nodes), sep = "")
+  igraph::E(unmatched_graph)$color <- "black"
 
   m5 <- m2 + m3 - m1
   m5[m5 != 1] <- 0
   extra_graph <- adj_to_graph(m5, mode)  #extra edges
-  V(extra_graph)$name <- paste("X", seq(num_nodes), sep = "")
-  E(extra_graph)$color <- "red"
+  igraph::V(extra_graph)$name <- paste("X", seq(num_nodes), sep = "")
+  igraph::E(extra_graph)$color <- "red"
 
   res_graph <- matched_graph + unmatched_graph + extra_graph
   merge_color_attr(res_graph)
 }
 #' @keywords internal
 merge_color_attr <- function(graph) {
-  res <- E(graph)$color
-  c1 <- E(graph)$color_1
+  res <- igraph::E(graph)$color
+  c1 <- igraph::E(graph)$color_1
   replace_index <- which(!is.na(c1))
   res[replace_index] <- c1[replace_index]
 
-  c2 <- E(graph)$color_2
+  c2 <- igraph::E(graph)$color_2
   replace_index <- which(!is.na(c2))
   res[replace_index] <- c2[replace_index]
 
-  E(graph)$color <- res
+  igraph::E(graph)$color <- res
   graph
 }
 #' Convert a adjacency matrix to graph.
