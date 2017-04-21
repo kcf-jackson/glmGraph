@@ -2,7 +2,7 @@
 % Please edit documentation in R/model_evaluation.R
 \name{g_tests}
 \alias{g_tests}
-\title{Edge-count tests}
+\title{Graph-based two-sample tests}
 \usage{
 g_tests(df1, df2, method = "euclidean")
 }
@@ -25,4 +25,16 @@ g_tests(data.frame(x = rnorm(100)), data.frame(x = rnorm(100)))
 ## Expect rejection of the null.
 g_tests(data.frame(x = rnorm(100)), data.frame(x = runif(100)))
 
+}
+\references{
+Friedman J. and Rafsky L. Multivariate generalizations of the
+WaldWolfowitz and Smirnov two-sample tests. The Annals of Statistics,
+7(4):697-717, 1979.
+
+Chen, H. and Friedman, J. H. A new graph-based two-sample test for
+multivariate and object data. Journal of the American Statistical
+Association, 2016.
+
+Chen, H., Chen, X. and Su, Y. A weighted edge-count two sample test for
+multivariate and object data. arXiv:1604.06515.
 }
