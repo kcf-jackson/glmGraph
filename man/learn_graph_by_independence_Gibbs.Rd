@@ -18,3 +18,4 @@ learn_graph_by_independence_Gibbs(data0, method, lambda, num_iter = 100)
 \description{
 Learn graph structure using the independence-based approach
 }
+\keyword{internal}

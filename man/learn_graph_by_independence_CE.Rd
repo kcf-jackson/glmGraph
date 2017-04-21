@@ -26,3 +26,4 @@ and half of the last estimate.}
 \description{
 Learn graph structure using the independence-based approach
 }
+\keyword{internal}
