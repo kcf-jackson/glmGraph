@@ -82,19 +82,26 @@ initialise_graph <- function(data0, method = "random", threshold = 0.75) {
   num_nodes <- ncol(data0)
   if (method == "random") {
     g <- create_random_graph(num_nodes, p = min(0.5, 2 / num_nodes^2))
-  } else if (method == "correlation") {
+    return(g)
+  } else {
+    g <- compute_distance_matrix(data0, method)
+  }
+  g <- (g > quantile(g, threshold))
+  diag(g) <- 0
+  g
+}
+
+
+#' @keywords internal
+compute_distance_matrix <- function(data0, method) {
+  if (method == "correlation") {
     g <- cor(data0)
     diag(g) <- -1
-    g <- (g > quantile(g, threshold))
-    diag(g) <- 0
   } else if (method == "mutual") {
     g <- data0 %>% infotheo::discretize() %>% infotheo::mutinformation()
     diag(g) <- 0
-    g <- (g > quantile(g, threshold))
-    diag(g) <- 0
   } else if (method == "copula") {
     g <- copula_cor(data0)
-    g <- (g > quantile(g, threshold))
   }
   g
 }

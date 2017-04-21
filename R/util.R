@@ -37,3 +37,13 @@ parameters2text <- function(parameters) {
 is.wholenumber <- function(x, tol = .Machine$double.eps^0.5) {
   abs(x - round(x)) < tol
 }
+
+#' @keywords internal
+normalise <- function(vec0) {
+  vec0 / sum(vec0)
+}
+
+#' @keywords internal
+which_max <- function(vec0) {
+  min(which(vec0 == max(vec0)))
+}
