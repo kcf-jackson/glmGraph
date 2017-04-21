@@ -27,7 +27,7 @@ between variables and keeps the ones above the third quartile. "mutual" is simil
 "correlation" except it uses pairwise mutual information instead.}
 
 \item{threshold}{if TRUE, the function returns a graph; if FALSE, the function returns
-the underlying Beunoulli probabilities.}
+the underlying Bernoulli probabilities.}
 }
 \description{
 Model selection for GLM graphical model using cross-entropy method

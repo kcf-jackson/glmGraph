@@ -42,6 +42,7 @@ learn_graph_by_CE <- function(data0, rho = 0.1, batch_size = 50, tol = 1e-05,
   # Iterate until convergence
   not_converged <- TRUE
   count <- 0
+  converge_count <- 0
   while (not_converged) {
     for (i in 1:batch_size) {
       rgraph <- sample_random_matrix(empty_matrix, prob_vec)
@@ -52,7 +53,9 @@ learn_graph_by_CE <- function(data0, rho = 0.1, batch_size = 50, tol = 1e-05,
     prob_vec <- (1 - alpha) * prob_vec +
       alpha * update_prob(prob_vec, random_samples, score, threshold)
     # update looping information
-    not_converged <- (abs(threshold - last_threshold) > tol)
+    not_converged <- (abs(threshold - last_threshold) > tol) | (converge_count <= 3)
+    converge_count <- ifelse(abs(threshold - last_threshold) <= tol,
+                             converge_count + 1, 0)
     last_threshold <- threshold
     count <- count + 1
     print(sprintf(
