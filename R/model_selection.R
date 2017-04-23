@@ -42,7 +42,8 @@ learn_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
         rgraph[i,j] %<>% flip_bit()
         rgraph[j,i] <- rgraph[i,j]
         new_likelihood <- current_likelihood +
-          add_new_likelihood(current_factorisation[i,], j, rgraph[i,j], data0)
+          add_new_likelihood(current_factorisation[i,], j, rgraph[i,j], data0,
+                             IC_factor = 2)
         #-------------------Update best graph----------------------
         has_improved <- (new_likelihood > best_measure_graph$score)
         if (has_improved) {
@@ -181,7 +182,7 @@ analyze_variable <- function(x0) {
 
 
 #' @keywords internal
-add_new_likelihood <- function(current, j, state, data0) {
+add_new_likelihood <- function(current, j, state, data0, IC_factor = 2) {
   fixed <- current$fixed[[1]]
   given <- current$given[[1]]
   family <- current$family[[1]]
@@ -200,7 +201,7 @@ add_new_likelihood <- function(current, j, state, data0) {
     family = family, engine = speedglm::speedglm.wfit
   )$logLik
 
-  edge_num_adjustment <- ifelse(state == 1, -2, 2)
+  edge_num_adjustment <- ifelse(state == 1, -1, 1) * IC_factor
   new_marginal_likelihood - current_marginal_likelihood + edge_num_adjustment
 }
 

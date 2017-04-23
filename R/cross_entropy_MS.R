@@ -26,11 +26,11 @@ learn_graph_by_CE <- function(data0, rho = 0.1, batch_size = 50, tol = 1e-05,
   }
   empty_matrix <- matrix(0, nrow = num_var, ncol = num_var)
   upper_index <- upper.tri(empty_matrix)
+  prob_vec <- rep(0.5, (num_var * (num_var - 1) / 2))
   random_samples <- matrix(0, nrow = batch_size, ncol = length(prob_vec))
   score <- numeric(batch_size)
 
   # Cross-entropy method
-  prob_vec <- rep(0.5, (num_var * (num_var - 1) / 2))
   for (i in 1:batch_size) {
     rgraph <- sample_random_matrix(empty_matrix, prob_vec)
     random_samples[i,] <- rgraph[upper_index]
