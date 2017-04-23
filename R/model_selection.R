@@ -42,7 +42,8 @@ learn_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
         rgraph[i,j] %<>% flip_bit()
         rgraph[j,i] <- rgraph[i,j]
         new_likelihood <- current_likelihood +
-          add_new_likelihood(current_factorisation[i,], j, rgraph[i,j], data0)
+          add_new_likelihood(current_factorisation[i,], j, rgraph[i,j], data0,
+                             IC_factor = 2)
         #-------------------Update best graph----------------------
         has_improved <- (new_likelihood > best_measure_graph$score)
         if (has_improved) {
@@ -82,19 +83,26 @@ initialise_graph <- function(data0, method = "random", threshold = 0.75) {
   num_nodes <- ncol(data0)
   if (method == "random") {
     g <- create_random_graph(num_nodes, p = min(0.5, 2 / num_nodes^2))
-  } else if (method == "correlation") {
+    return(g)
+  } else {
+    g <- compute_distance_matrix(data0, method)
+  }
+  g <- (g > quantile(g, threshold))
+  diag(g) <- 0
+  g
+}
+
+
+#' @keywords internal
+compute_distance_matrix <- function(data0, method) {
+  if (method == "correlation") {
     g <- cor(data0)
     diag(g) <- -1
-    g <- (g > quantile(g, threshold))
-    diag(g) <- 0
   } else if (method == "mutual") {
     g <- data0 %>% infotheo::discretize() %>% infotheo::mutinformation()
     diag(g) <- 0
-    g <- (g > quantile(g, threshold))
-    diag(g) <- 0
   } else if (method == "copula") {
     g <- copula_cor(data0)
-    g <- (g > quantile(g, threshold))
   }
   g
 }
@@ -174,7 +182,7 @@ analyze_variable <- function(x0) {
 
 
 #' @keywords internal
-add_new_likelihood <- function(current, j, state, data0) {
+add_new_likelihood <- function(current, j, state, data0, IC_factor = 2) {
   fixed <- current$fixed[[1]]
   given <- current$given[[1]]
   family <- current$family[[1]]
@@ -193,7 +201,7 @@ add_new_likelihood <- function(current, j, state, data0) {
     family = family, engine = speedglm::speedglm.wfit
   )$logLik
 
-  edge_num_adjustment <- ifelse(state == 1, -2, 2)
+  edge_num_adjustment <- ifelse(state == 1, -1, 1) * IC_factor
   new_marginal_likelihood - current_marginal_likelihood + edge_num_adjustment
 }
 

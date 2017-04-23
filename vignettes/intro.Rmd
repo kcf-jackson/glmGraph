@@ -210,8 +210,8 @@ table0 <- rgraph %>% factorise() %>% build_conditional(family = family)
 data0 <- simulate_data(table0, n = 1000)
 
 s <- learn_graph(data0, num_iter = 200, graph_init = "mutual")
-plot(compare_graphs(rgraph, s$best_model$rgraph))
-plot(compare_graphs(rgraph, s$freq_graph$rgraph > 0.75))
+plot(compare_graphs(rgraph, s$best_model$rgraph), edge.width = 2)
+plot(compare_graphs(rgraph, s$freq_graph$rgraph > 0.75), edge.width = 2)
 
 s2 <- learn_graph_by_CE(data0)
 plot(compare_graphs(rgraph, s2$graph > 0.5))

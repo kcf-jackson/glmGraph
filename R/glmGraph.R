@@ -21,3 +21,5 @@ NULL
 #' quasipoisson glm.fit cor quantile
 #' @importFrom utils setTxtProgressBar txtProgressBar
 NULL
+
+utils::globalVariables(c(".", "%>%"))
