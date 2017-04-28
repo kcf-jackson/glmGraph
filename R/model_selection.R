@@ -9,13 +9,24 @@
 #'"correlation" except it uses pairwise mutual information instead.
 #' @export
 learn_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
-                         graph_init = "random") {
+                         graph_init = "random", reg_FUN = "BIC") {
   if (!all(sapply(head(data0), is.numeric))) {
     stop("data has to be all numerics at the moment.")
   }
   if (missing(lambda)) {
     lambda <- 1 / sqrt(nrow(data0))
   }
+  num_data <- nrow(data0)
+  if (reg_FUN == "BIC") {
+    reg_FUN <- BIC_like
+    IC_factor <- log(num_data)
+  } else if (reg_FUN == "AIC") {
+    reg_FUN <- AIC_like
+    IC_factor <- 2
+  } else {
+    stop("Regularisation function must be one of AIC and BIC.")
+  }
+
   num_var <- ncol(data0)
   rgraph <- create_random_graph(num_var, p = p)
   nr <- nrow(rgraph)
@@ -25,7 +36,8 @@ learn_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
     stop(check_family(family))
   }
   current_model <- fit_graph(rgraph, family, data0)
-  current_likelihood <- get_model_likelihood(current_model) - sum(rgraph)
+  current_likelihood <- get_model_likelihood(current_model) +
+    reg_FUN(n = num_data, k = sum(rgraph) / 2)
   current_factorisation <- essential_spec(rgraph, family)
   print(current_likelihood)
   #---------------Variables for model selection--------------------
@@ -43,7 +55,7 @@ learn_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
         rgraph[j,i] <- rgraph[i,j]
         new_likelihood <- current_likelihood +
           add_new_likelihood(current_factorisation[i,], j, rgraph[i,j], data0,
-                             IC_factor = 2)
+                             IC_factor = IC_factor)
         #-------------------Update best graph----------------------
         has_improved <- (new_likelihood > best_measure_graph$score)
         if (has_improved) {
@@ -70,6 +82,7 @@ learn_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
   }
   best_measure_graph$family <- family
   frequency_graph$rgraph <- frequency_graph$rgraph / num_iter
+  frequency_graph$family <- family
   list(best_model = best_measure_graph, freq_graph = frequency_graph)
 }
 
@@ -205,3 +218,13 @@ add_new_likelihood <- function(current, j, state, data0, IC_factor = 2) {
   new_marginal_likelihood - current_marginal_likelihood + edge_num_adjustment
 }
 
+
+#' @keywords internal
+AIC_like <- function(n, k) {
+  -2 * k
+}
+
+#' @keywords internal
+BIC_like <- function(n, k) {
+  -log(n) * k
+}

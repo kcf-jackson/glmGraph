@@ -5,7 +5,7 @@
 \title{Model selection for GLM graphical model using cross-entropy method}
 \usage{
 learn_graph_by_CE(data0, rho = 0.1, batch_size = 50, tol = 1e-05,
-  alpha = 1, graph_init = "random", threshold = T)
+  alpha = 1, graph_init = "random", threshold = T, reg_FUN = "BIC")
 }
 \arguments{
 \item{data0}{dataframe; the data.}

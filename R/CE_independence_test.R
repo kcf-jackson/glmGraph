@@ -10,10 +10,13 @@
 #' and half of the last estimate.
 #' @keywords internal
 learn_graph_by_independence_CE <- function(data0, method, batch_size = 500,
-                                           rho = 0.1, tol = 1e-05, alpha = 1) {
+                                           rho = 0.1, tol = 1e-05, alpha = 1,
+                                           reg_FUN = "BIC") {
   r_matrix <- data0 %>%
     compute_distance_matrix(method = method) %>%
     convert_distance_to_rank()
+  num_data <- nrow(data0)
+  reg_FUN <- initialise_reg_FUN(reg_FUN)
   num_var <- ncol(data0)
   family <- apply(data0, 2, analyze_variable)
   multinom_prob <- purrr::map(
@@ -31,7 +34,8 @@ learn_graph_by_independence_CE <- function(data0, method, batch_size = 500,
     for (i in 1:batch_size) {
       threshold_samples[i,] <- sample_rank_threshold(multinom_prob)
       rgraph <- threshold_rank_matrix(r_matrix, threshold_samples[i,])
-      score[i] <- get_model_likelihood(fit_graph(rgraph, family, data0)) - sum(rgraph)
+      score[i] <- get_model_likelihood(fit_graph(rgraph, family, data0)) +
+        reg_FUN(n = num_data, k = sum(rgraph) / 2)
     }
     # Take the threshold to be the 1 - rho quantile of the scores
     # Retain all the samples with score abaove threshold and update the multinomial

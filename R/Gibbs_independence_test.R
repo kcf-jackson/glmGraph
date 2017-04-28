@@ -5,8 +5,10 @@
 #' @param num_iter number of iterations for gibbs sampler.
 #' @keywords internal
 learn_graph_by_independence_Gibbs <- function(data0, method, lambda,
-                                              num_iter = 100) {
+                                              num_iter = 100, reg_FUN = "BIC") {
   if (missing(lambda)) lambda <- 1 / sqrt(nrow(data0))
+  num_data <- nrow(data0)
+  reg_FUN <- initialise_reg_FUN(reg_FUN)
   num_var <- ncol(data0)
   family <- apply(data0, 2, analyze_variable)
   r_matrix <- data0 %>%
@@ -16,7 +18,8 @@ learn_graph_by_independence_Gibbs <- function(data0, method, lambda,
 
   coordinates <- num_var:2
   rgraph <- threshold_rank_matrix(r_matrix, coordinates)
-  current_score <- get_model_likelihood(fit_graph(rgraph, family, data0)) - sum(rgraph)
+  current_score <- get_model_likelihood(fit_graph(rgraph, family, data0)) +
+    reg_FUN(n = num_data, k = sum(rgraph) / 2)
   print(current_score)
   best_score <- current_score
   best_graph <- rgraph
@@ -33,7 +36,8 @@ learn_graph_by_independence_Gibbs <- function(data0, method, lambda,
         threshold[i] <- j
         # For each possible threshold, create a graph and compute score
         temp_graph <- threshold_rank_matrix(r_matrix, threshold)
-        score[j] <- get_model_likelihood(fit_graph(temp_graph, family, data0)) - sum(temp_graph)
+        score[j] <- get_model_likelihood(fit_graph(temp_graph, family, data0)) +
+          reg_FUN(n = num_data, k = sum(rgraph) / 2)
         #---------- Keep track of the best graph ------------------------------
         if (score[j] > best_score) {
           best_score <- score[j]

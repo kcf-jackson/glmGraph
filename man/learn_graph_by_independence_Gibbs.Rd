@@ -4,7 +4,8 @@
 \alias{learn_graph_by_independence_Gibbs}
 \title{Learn graph structure using the independence-based approach}
 \usage{
-learn_graph_by_independence_Gibbs(data0, method, lambda, num_iter = 100)
+learn_graph_by_independence_Gibbs(data0, method, lambda, num_iter = 100,
+  reg_FUN = "BIC")
 }
 \arguments{
 \item{data0}{dataframe; the data.}

@@ -4,7 +4,7 @@
 \alias{learn_graph_by_independence_CD}
 \title{Learn graph structure using the independence-based approach}
 \usage{
-learn_graph_by_independence_CD(data0, method)
+learn_graph_by_independence_CD(data0, method, reg_FUN = "BIC")
 }
 \arguments{
 \item{data0}{dataframe; the data.}

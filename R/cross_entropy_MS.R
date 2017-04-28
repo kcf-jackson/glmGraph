@@ -15,10 +15,13 @@
 #' the underlying Bernoulli probabilities.
 #' @export
 learn_graph_by_CE <- function(data0, rho = 0.1, batch_size = 50, tol = 1e-05,
-                              alpha = 1, graph_init = "random", threshold = T) {
+                              alpha = 1, graph_init = "random", threshold = T,
+                              reg_FUN = "BIC") {
   if (!all(sapply(head(data0), is.numeric))) {
     stop("data has to be all numerics at the moment.")
   }
+  num_data <- nrow(data0)
+  reg_FUN <- initialise_reg_FUN(reg_FUN)
   num_var <- ncol(data0)
   family <- apply(data0, 2, analyze_variable)
   if ("unknown" %in% family) {
@@ -34,7 +37,8 @@ learn_graph_by_CE <- function(data0, rho = 0.1, batch_size = 50, tol = 1e-05,
   for (i in 1:batch_size) {
     rgraph <- sample_random_matrix(empty_matrix, prob_vec)
     random_samples[i,] <- rgraph[upper_index]
-    score[i] <- get_model_likelihood(fit_graph(rgraph, family, data0)) - sum(rgraph)
+    score[i] <- get_model_likelihood(fit_graph(rgraph, family, data0)) +
+      reg_FUN(n = num_data, k = sum(rgraph) / 2)
   }
   last_threshold <- compute_threshold(score, rho)
   prob_vec <- (1 - alpha) * prob_vec +
@@ -47,7 +51,8 @@ learn_graph_by_CE <- function(data0, rho = 0.1, batch_size = 50, tol = 1e-05,
     for (i in 1:batch_size) {
       rgraph <- sample_random_matrix(empty_matrix, prob_vec)
       random_samples[i,] <- rgraph[upper_index]
-      score[i] <- get_model_likelihood(fit_graph(rgraph, family, data0)) - sum(rgraph)
+      score[i] <- get_model_likelihood(fit_graph(rgraph, family, data0)) +
+        reg_FUN(n = num_data, k = sum(rgraph) / 2)
     }
     threshold <- compute_threshold(score, rho)
     prob_vec <- (1 - alpha) * prob_vec +
@@ -96,4 +101,16 @@ vec2mat <- function(vec0, dim) {
   res <- matrix(0, nrow = dim, ncol = dim)
   res[lower.tri(res)] <- vec0
   res + t(res)
+}
+
+#' @keywords internal
+initialise_reg_FUN <- function(reg_FUN) {
+  if (reg_FUN == "BIC") {
+    reg_FUN <- BIC_like
+  } else if (reg_FUN == "AIC") {
+    reg_FUN <- AIC_like
+  } else {
+    stop("Regularisation function must be one of AIC and BIC.")
+  }
+  reg_FUN
 }

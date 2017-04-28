@@ -5,7 +5,7 @@
 \title{Learn graph structure using the independence-based approach}
 \usage{
 learn_graph_by_independence_CE(data0, method, batch_size = 500, rho = 0.1,
-  tol = 1e-05, alpha = 1)
+  tol = 1e-05, alpha = 1, reg_FUN = "BIC")
 }
 \arguments{
 \item{data0}{dataframe; the data.}

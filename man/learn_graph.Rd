@@ -4,7 +4,8 @@
 \alias{learn_graph}
 \title{Model selection for GLM graph}
 \usage{
-learn_graph(data0, p = 0.2, lambda, num_iter = 100, graph_init = "random")
+learn_graph(data0, p = 0.2, lambda, num_iter = 100, graph_init = "random",
+  reg_FUN = "BIC")
 }
 \arguments{
 \item{data0}{dataframe; the data.}
