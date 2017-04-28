@@ -5,7 +5,7 @@
 \title{Learn graph structure using the independence-based approach}
 \usage{
 learn_graph_by_independence_CE(data0, method, batch_size = 500, rho = 0.1,
-  tol = 1e-05, alpha = 1, reg_FUN = "BIC")
+  tol = 1e-05, alpha = 1, reg = "BIC")
 }
 \arguments{
 \item{data0}{dataframe; the data.}
@@ -22,6 +22,8 @@ considered as good samples.}
 \item{alpha}{Smooth-update parameter between 0 and 1. When alpha = 1, the update uses
 only the current estimate; when alpha = 0.5, the update uses half of the current estimate
 and half of the last estimate.}
+
+\item{reg}{Information criteria for regularisation; "AIC" or "BIC".}
 }
 \description{
 Learn graph structure using the independence-based approach

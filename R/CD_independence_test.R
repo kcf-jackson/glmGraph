@@ -1,13 +1,14 @@
 #' Learn graph structure using the independence-based approach (coordinate descent)
 #' @param data0 dataframe; the data.
 #' @param method One of 'random', 'correlation', 'mutual' and 'copula".
+#' @param reg Information criteria for regularisation; "AIC" or "BIC".
 #' @export
-learn_graph_by_independence_CD <- function(data0, method, reg_FUN = "BIC") {
+learn_graph_by_independence_CD <- function(data0, method, reg = "BIC") {
   r_matrix <- data0 %>%
     compute_distance_matrix(method = method) %>%
     convert_distance_to_rank()
   num_data <- nrow(data0)
-  reg_FUN <- initialise_reg_FUN(reg_FUN)
+  reg_FUN <- initialise_reg_FUN(reg)
   num_var <- ncol(data0)
   family <- apply(data0, 2, analyze_variable)
 

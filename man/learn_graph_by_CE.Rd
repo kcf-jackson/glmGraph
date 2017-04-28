@@ -5,7 +5,7 @@
 \title{Model selection for GLM graphical model using cross-entropy method}
 \usage{
 learn_graph_by_CE(data0, rho = 0.1, batch_size = 50, tol = 1e-05,
-  alpha = 1, graph_init = "random", threshold = T, reg_FUN = "BIC")
+  alpha = 1, graph_init = "random", threshold = T, reg = "BIC")
 }
 \arguments{
 \item{data0}{dataframe; the data.}
@@ -28,6 +28,8 @@ between variables and keeps the ones above the third quartile. "mutual" is simil
 
 \item{threshold}{if TRUE, the function returns a graph; if FALSE, the function returns
 the underlying Bernoulli probabilities.}
+
+\item{reg}{Information criteria for regularisation; "AIC" or "BIC".}
 }
 \description{
 Model selection for GLM graphical model using cross-entropy method

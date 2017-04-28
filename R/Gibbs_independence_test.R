@@ -3,12 +3,13 @@
 #' @param method One of 'random', 'correlation', 'mutual' and 'copula".
 #' @param lambda Tuning parameter for gibbs sampler.
 #' @param num_iter number of iterations for gibbs sampler.
+#' @param reg Information criteria for regularisation; "AIC" or "BIC".
 #' @keywords internal
 learn_graph_by_independence_Gibbs <- function(data0, method, lambda,
-                                              num_iter = 100, reg_FUN = "BIC") {
+                                              num_iter = 100, reg = "BIC") {
   if (missing(lambda)) lambda <- 1 / sqrt(nrow(data0))
   num_data <- nrow(data0)
-  reg_FUN <- initialise_reg_FUN(reg_FUN)
+  reg_FUN <- initialise_reg_FUN(reg)
   num_var <- ncol(data0)
   family <- apply(data0, 2, analyze_variable)
   r_matrix <- data0 %>%

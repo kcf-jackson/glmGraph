@@ -13,15 +13,16 @@
 #'"correlation" except it uses pairwise mutual information instead.
 #' @param threshold if TRUE, the function returns a graph; if FALSE, the function returns
 #' the underlying Bernoulli probabilities.
+#' @param reg Information criteria for regularisation; "AIC" or "BIC".
 #' @export
 learn_graph_by_CE <- function(data0, rho = 0.1, batch_size = 50, tol = 1e-05,
                               alpha = 1, graph_init = "random", threshold = T,
-                              reg_FUN = "BIC") {
+                              reg = "BIC") {
   if (!all(sapply(head(data0), is.numeric))) {
     stop("data has to be all numerics at the moment.")
   }
   num_data <- nrow(data0)
-  reg_FUN <- initialise_reg_FUN(reg_FUN)
+  reg_FUN <- initialise_reg_FUN(reg)
   num_var <- ncol(data0)
   family <- apply(data0, 2, analyze_variable)
   if ("unknown" %in% family) {

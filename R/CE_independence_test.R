@@ -8,15 +8,16 @@
 #' @param alpha Smooth-update parameter between 0 and 1. When alpha = 1, the update uses
 #' only the current estimate; when alpha = 0.5, the update uses half of the current estimate
 #' and half of the last estimate.
+#' @param reg Information criteria for regularisation; "AIC" or "BIC".
 #' @keywords internal
 learn_graph_by_independence_CE <- function(data0, method, batch_size = 500,
                                            rho = 0.1, tol = 1e-05, alpha = 1,
-                                           reg_FUN = "BIC") {
+                                           reg = "BIC") {
   r_matrix <- data0 %>%
     compute_distance_matrix(method = method) %>%
     convert_distance_to_rank()
   num_data <- nrow(data0)
-  reg_FUN <- initialise_reg_FUN(reg_FUN)
+  reg_FUN <- initialise_reg_FUN(reg)
   num_var <- ncol(data0)
   family <- apply(data0, 2, analyze_variable)
   multinom_prob <- purrr::map(

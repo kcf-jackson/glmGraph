@@ -5,7 +5,7 @@
 \title{Model selection for GLM graph}
 \usage{
 learn_graph(data0, p = 0.2, lambda, num_iter = 100, graph_init = "random",
-  reg_FUN = "BIC")
+  reg = "BIC")
 }
 \arguments{
 \item{data0}{dataframe; the data.}
@@ -20,6 +20,8 @@ learn_graph(data0, p = 0.2, lambda, num_iter = 100, graph_init = "random",
 "random" generates a graph randomly. "correlation" computes the pairwise correlation
 between variables and keeps the ones above the third quartile. "mutual" is similar to
 "correlation" except it uses pairwise mutual information instead.}
+
+\item{reg}{Information criteria for regularisation; "AIC" or "BIC".}
 }
 \description{
 Model selection for GLM graph

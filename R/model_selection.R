@@ -7,9 +7,10 @@
 #'"random" generates a graph randomly. "correlation" computes the pairwise correlation
 #'between variables and keeps the ones above the third quartile. "mutual" is similar to
 #'"correlation" except it uses pairwise mutual information instead.
+#' @param reg Information criteria for regularisation; "AIC" or "BIC".
 #' @export
 learn_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
-                         graph_init = "random", reg_FUN = "BIC") {
+                         graph_init = "random", reg = "BIC") {
   if (!all(sapply(head(data0), is.numeric))) {
     stop("data has to be all numerics at the moment.")
   }
@@ -17,10 +18,10 @@ learn_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
     lambda <- 1 / sqrt(nrow(data0))
   }
   num_data <- nrow(data0)
-  if (reg_FUN == "BIC") {
+  if (reg == "BIC") {
     reg_FUN <- BIC_like
     IC_factor <- log(num_data)
-  } else if (reg_FUN == "AIC") {
+  } else if (reg == "AIC") {
     reg_FUN <- AIC_like
     IC_factor <- 2
   } else {
@@ -146,7 +147,13 @@ essential_spec <- function(rgraph, family) {
 }
 
 
-#' @keywords internal
+#' Wrapper function for 'factorise', 'build_conditional' and 'MLE_graph'
+#' @description This function takes a graph and fits the data with the family
+#' specification.
+#' @param rgraph matrix; a graph encoded in adjacency matrix.
+#' @param family vector of characters string; the family for each variable.
+#' @param data0 dataframe; the data.
+#' @export
 fit_graph <- function(rgraph, family, data0) {
   full_spec <- build_conditional(factorise(rgraph), family)
   MLE_graph(full_spec, data0)

@@ -5,7 +5,7 @@
 \title{Learn graph structure using the independence-based approach}
 \usage{
 learn_graph_by_independence_Gibbs(data0, method, lambda, num_iter = 100,
-  reg_FUN = "BIC")
+  reg = "BIC")
 }
 \arguments{
 \item{data0}{dataframe; the data.}
@@ -15,6 +15,8 @@ learn_graph_by_independence_Gibbs(data0, method, lambda, num_iter = 100,
 \item{lambda}{Tuning parameter for gibbs sampler.}
 
 \item{num_iter}{number of iterations for gibbs sampler.}
+
+\item{reg}{Information criteria for regularisation; "AIC" or "BIC".}
 }
 \description{
 Learn graph structure using the independence-based approach
