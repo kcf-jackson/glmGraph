@@ -2,8 +2,7 @@
 % Please edit documentation in R/likelihood.R
 \name{compute_likelihood}
 \alias{compute_likelihood}
-\title{Compute the likelihood for a single data-point given the complete
-factorisation table}
+\title{Compute the likelihood for a dataset given the complete factorisation table}
 \usage{
 compute_likelihood(table0, data0, log = TRUE)
 }
@@ -15,7 +14,11 @@ compute_likelihood(table0, data0, log = TRUE)
 \item{log}{TRUE / FALSE; returns loglikelihood / likelihood.}
 }
 \description{
-Compute the likelihood for a single data-point given the complete
-factorisation table
+Compute the likelihood for a dataset given the complete factorisation table
 }
-\keyword{internal}
+\note{
+Note that there are some discrepancy between the likelihood extracted from
+the model and the likelihood computed using this function for the gaussian and gamma
+family. The reason is that speedglm::speedglm (and stats:glm) computes the likelihood
+using the ML estimates, but reports the LS estimates for the dispersion parameters.
+}

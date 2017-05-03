@@ -14,3 +14,4 @@ simplify_conditional(conditional_list, edges)
 \description{
 This function simplifies conditionanl given the dependence information
 }
+\keyword{internal}

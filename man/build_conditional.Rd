@@ -9,9 +9,13 @@ build_conditional(df0, family)
 \arguments{
 \item{df0}{A factorisation table; output from "factorise".}
 
-\item{family}{Characters string; the exponential family of distribution.
-It must be one of c("gaussian", "gamma", "poisson", "binomial", "multinomial",
-"quasibinomial", "quasipoisson")}
+\item{family}{Vector of characters string; names of the exponential family of
+distribution to be used. It must be one of c("gaussian", "gamma", "poisson",
+"binomial")}
+}
+\value{
+A dataframe containing the full specification including the factorisation
+and all the information about the asssociated GLM family.
 }
 \description{
 Specify the distribution for each conditional density

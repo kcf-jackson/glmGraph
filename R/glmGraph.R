@@ -18,6 +18,8 @@ NULL
 #' @importFrom graphics plot
 #' @importFrom stats dbinom dgamma dmultinom dnbinom dnorm dpois rbinom
 #' rgamma rmultinom rnbinom rnorm rpois runif Gamma binomial poisson
-#' quasipoisson glm.fit
+#' quasipoisson glm.fit cor quantile
 #' @importFrom utils setTxtProgressBar txtProgressBar
 NULL
+
+utils::globalVariables(c(".", "%>%"))

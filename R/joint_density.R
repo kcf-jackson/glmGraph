@@ -1,12 +1,16 @@
 #' Specify the distribution for each conditional density
 #' @param df0 A factorisation table; output from "factorise".
-#' @param family Characters string; the exponential family of distribution.
-#' It must be one of c("gaussian", "gamma", "poisson", "binomial", "multinomial",
-#' "quasibinomial", "quasipoisson")
+#' @param family Vector of characters string; names of the exponential family of
+#' distribution to be used. It must be one of c("gaussian", "gamma", "poisson",
+#' "binomial")
+#' @return A dataframe containing the full specification including the factorisation
+#' and all the information about the asssociated GLM family.
 #' @export
+# To-do: Add support to "multinomial", "quasibinomial", "quasipoisson"
 build_conditional <- function(df0, family) {
   if (missing(family))
     family = rep("gaussian", nrow(df0))
+
   df0 %>%
     dplyr::mutate(
       family = family,
@@ -15,25 +19,21 @@ build_conditional <- function(df0, family) {
       invLink_FUN = family %>% purrr::map(family2invLinkFUN),
       parameters = family %>% purrr::map(family2parameters),
       mean = rep(1, nrow(df0)),
-      beta = df0$given %>% purrr::map(~rnorm(length(.x) + 1)) #intercept
+      beta =  purrr::map(
+        .x = df0$given,
+        .f = ~rnorm(length(.x) + 1, sd = 1 / sqrt(nrow(df0)))
+      ) #intercept
     )
 }
 
-#' Update the conditional mean given the data
-#' @keywords internal
-#' @describeIn This function updates the conditional mean given the data in preparation
-#' for the parameters update.
-update_conditional_mean <- function(df0, x0) {
-  df0$mean <- purrr::pmap_dbl(
-    .l = list(pos = df0$given, beta = df0$beta, inv_link = df0$invLink_FUN,
-              default = df0$mean),
-    .f = compute_mean, x = x0
-  )
-  df0
-}
-
-#' @keywords internal
-compute_mean <- function(pos, x, beta, inv_link, default) {
-  if (length(x[pos]) == 0) { return(beta) }
-  inv_link(sum(c(1, x[pos]) * beta, na.rm = TRUE)) #intercept
+#' Print out summary of a complete factorisation table
+#' @param table0 dataframe; the complete factorisation table; output from
+#' build_conditional.
+#' @export
+print_summary <- function(table0) {
+  ref_table <- create_reference_table()
+  table0 %>%
+    magrittr::extract(c("fixed", "given", "family", "beta")) %>%
+    dplyr::left_join(ref_table, by = "family") %>%
+    dplyr::mutate(parameters = purrr::map(table0$parameters, parameters2text))
 }
