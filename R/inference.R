@@ -20,7 +20,7 @@ MLE_graph <- function(table0, data0) {
       family = c_family,
       engine = speedglm::speedglm.wfit
     )
-    loglikelihood <- loglikelihood + glm_model$logLik   #intercept
+    loglikelihood <- loglikelihood + glm_model$logLik
     current$beta[[1]] <- get_parameters(glm_model)
     current$parameters[[1]] %<>%
       dispersion2parameters(glm_model$dispersion, c_family)
@@ -28,6 +28,7 @@ MLE_graph <- function(table0, data0) {
     # setTxtProgressBar(pb, i)
   }
   attr(table0, "loglikelihood") <- loglikelihood
+  attr(table0, "beta") <- "fitted"
   table0
 }
 

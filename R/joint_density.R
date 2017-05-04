@@ -11,7 +11,7 @@ build_conditional <- function(df0, family) {
   if (missing(family))
     family = rep("gaussian", nrow(df0))
 
-  df0 %>%
+  res <- df0 %>%
     dplyr::mutate(
       family = family,
       likelihood_FUN = family %>% purrr::map(family2likeFUN),
@@ -24,6 +24,9 @@ build_conditional <- function(df0, family) {
         .f = ~rnorm(length(.x) + 1, sd = 1 / sqrt(nrow(df0)))
       ) #intercept
     )
+
+  attributes(res)$beta <- "random"
+  res
 }
 
 #' Print out summary of a complete factorisation table
