@@ -2,12 +2,13 @@
 % Please edit documentation in R/simulation.R
 \name{simulate_data}
 \alias{simulate_data}
-\title{Simulate data given the complete factorisation table}
+\title{Simulate data given the graphical model.}
 \usage{
 simulate_data(table0, n = 100)
 }
 \arguments{
-\item{table0}{dataframe; the complete factorisation table, output from "build_conditional".}
+\item{table0}{dataframe; the graphical model expressed in a complete
+factorisation table, output from "build_conditional".}
 
 \item{n}{integer; number of data to simulate.}
 }
@@ -15,5 +16,5 @@ simulate_data(table0, n = 100)
 n x p matrix; n is the number of data, p is the number of variables.
 }
 \description{
-Simulate data given the complete factorisation table
+Simulate data given the graphical model.
 }

@@ -117,6 +117,7 @@ mean2parameters <- function(parameters, mu, family) {
   parameters
 }
 
+#' Convert dispersion value into parameter value
 #' @keywords internal
 dispersion2parameters <- function(parameters, dispersion, family) {
   if (family == "gaussian") {
