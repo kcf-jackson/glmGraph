@@ -8,9 +8,10 @@
 #'between variables and keeps the ones above the third quartile. "mutual" is similar to
 #'"correlation" except it uses pairwise mutual information instead.
 #' @param reg Information criteria for regularisation; "AIC" or "BIC".
+#' @param ... Extra parameters to be passed to speedglm::speedglm.
 #' @export
 learn_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
-                         graph_init = "random", reg = "BIC") {
+                         graph_init = "random", reg = "BIC", ...) {
   if (!all(sapply(head(data0), is.numeric))) {
     stop("data has to be all numerics at the moment.")
   }
@@ -56,7 +57,7 @@ learn_graph <- function(data0, p = 0.2, lambda, num_iter = 100,
         rgraph[j,i] <- rgraph[i,j]
         new_likelihood <- current_likelihood +
           add_new_likelihood(current_factorisation[i,], j, rgraph[i,j], data0,
-                             IC_factor = IC_factor)
+                             IC_factor = IC_factor, ...)
         #-------------------Update best graph----------------------
         has_improved <- (new_likelihood > best_measure_graph$score)
         if (has_improved) {
@@ -124,7 +125,7 @@ compute_distance_matrix <- function(data0, method) {
 
 #' @keywords internal
 gibbs_update <- function(lambda, score_vec) {
-  score_vec <- score_vec - score_vec[1]   #protect against divide by 0
+  score_vec <- score_vec - max(score_vec)   #protect against divide by 0
   prob_vec <- exp(lambda * score_vec)
   prob_vec <- prob_vec / sum(prob_vec)
   sample(seq_along(score_vec), size = 1, prob = prob_vec)
@@ -178,12 +179,12 @@ flip_bit <- function(x) {
 #' Detect variable type and decide what family of distribution to use
 #' @keywords internal
 #' @param x0; data vector
-analyze_variable <- function(x0) {
+analyze_variable <- function(x0, threshold = 5) {
   variable_range <- length(unique(x0))
   if (variable_range == 2) {
     return("binomial")   #binary data
   } else {
-    if (is.factor(x0)) {
+    if (is.factor(x0) | (variable_range < threshold)) {
       return("multinomial")
     } else if (is.numeric(x0)) {
       if (all(is.wholenumber(x0))) {
@@ -202,7 +203,7 @@ analyze_variable <- function(x0) {
 
 
 #' @keywords internal
-add_new_likelihood <- function(current, j, state, data0, IC_factor = 2) {
+add_new_likelihood <- function(current, j, state, data0, IC_factor = 2, ...) {
   fixed <- current$fixed[[1]]
   given <- current$given[[1]]
   family <- current$family[[1]]
@@ -218,7 +219,7 @@ add_new_likelihood <- function(current, j, state, data0, IC_factor = 2) {
   }
   new_marginal_likelihood <- fit_glm(
     y = data0[,fixed], x = cbind(intercept = 1, data0[,new_given]),
-    family = family, engine = speedglm::speedglm.wfit
+    family = family, engine = speedglm::speedglm.wfit, ...
   )$logLik
 
   edge_num_adjustment <- ifelse(state == 1, -1, 1) * IC_factor

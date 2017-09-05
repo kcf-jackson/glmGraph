@@ -9,14 +9,15 @@
 #' A common usage is to do multiple imputation.
 #' Note that "mean" and "response" are the same for continuous distribution.
 #' @export
-imputation <- function(table0, data0, method, threshold) {
-  predict.graph(table0, data0, method, threshold)
+imputation <- function(table0, data0, method = "response", threshold = 0.5) {
+  predict_graph(table0, data0, method, threshold)
 }
 
 
 #' Predict based on a graphical model
 #' @param table0 data.frame; full joint density specification fitted to data.
 #' @param data0 data.frame; the data.
+#' @param resp_var character strings; the name of the variable to be predicted.
 #' @param method "mean" or "response". See 'details' for more information.
 #' @param threshold probability threshold to decide the class for the binomial distribution.
 #' @details "mean" refers to predicting with the conditional mean.
@@ -25,14 +26,17 @@ imputation <- function(table0, data0, method, threshold) {
 #' A common usage is to predict the actual class.
 #' Note that "mean" and "response" are the same for continuous distribution.
 #' @export
-predict.graphical_model <- function(table0, data0, method, threshold) {
-  predict.graph(table0, data0, method, threshold)
+predict_graphical_model <- function(table0, data0, resp_var,
+                                    method = "mean", threshold = 0.5) {
+  data0[[resp_var]] <- NA
+  predict_graph(table0, data0, method, threshold) %>%
+    dplyr::select(dplyr::one_of(resp_var))
 }
 
 
 #' Predict based on a graphical model
 #' @keywords internal
-predict.graph <- function(table0, data0, method = "mean", threshold = 0.5) {
+predict_graph <- function(table0, data0, method = "mean", threshold = 0.5) {
   table1 <- table0 %>% add_covariates_column()
 
   completed_index <- c()

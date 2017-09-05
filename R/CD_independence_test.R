@@ -15,7 +15,7 @@ learn_graph_by_independence_CD <- function(data0, method, reg = "BIC") {
   coordinates <- num_var:2
   best_graph <- threshold_rank_matrix(r_matrix, coordinates)
   best_score <- get_model_likelihood(fit_graph(best_graph, family, data0)) +
-    reg_FUN(n = num_data, k = sum(rgraph) / 2)
+    reg_FUN(n = num_data, k = sum(best_graph) / 2)
 
   for (i in 1:(nrow(r_matrix) - 1)) {
     score <- numeric(num_var + 1 - i)
@@ -23,7 +23,7 @@ learn_graph_by_independence_CD <- function(data0, method, reg = "BIC") {
       coordinates[i] <- j
       tmp_graph <- threshold_rank_matrix(r_matrix, coordinates)
       score[j] <- get_model_likelihood(fit_graph(tmp_graph, family, data0)) +
-        reg_FUN(n = num_data, k = sum(rgraph) / 2)
+        reg_FUN(n = num_data, k = sum(tmp_graph) / 2)
       if (score[j] > best_score) {
         best_score <- score[j]
         best_graph <- tmp_graph

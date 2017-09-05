@@ -33,13 +33,13 @@ MLE_graph <- function(table0, data0) {
 }
 
 #' @keywords internal
-fit_glm <- function(x, y, family, engine) {
+fit_glm <- function(x, y, family, engine, ...) {
   if (family == "gamma") {
     family <- Gamma(link = log)
   } else {
     family = match.fun(family)()
   }
-  engine(as.matrix(x), y = y, family = family)
+  engine(as.matrix(x), y = y, family = family, ...)
 }
 
 #' @keywords internal

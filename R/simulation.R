@@ -31,7 +31,7 @@ simulate_data <- function(table0, n = 100) {
 }
 
 #' @keywords internal
-#' @description This function finds the nodes that have all covariates ready to be used.
+# This function finds the nodes that have all covariates ready to be used.
 get_available_rows <- function(table1, exclude = c()) {
   table1 %>%
     magrittr::use_series("given") %>%
@@ -48,7 +48,7 @@ get_batch_eta <- function(beta, data0) {
 }
 
 #' @keywords internal
-#' @description This function samples from the distribution given the conditional mean.
+# This function samples from the distribution given the conditional mean.
 get_sim_data <- function(c_parameter, mu, c_family, c_sim_FUN) {
   c_parameter %<>% append(list(n = 1))
   mu %>%
@@ -58,8 +58,8 @@ get_sim_data <- function(c_parameter, mu, c_family, c_sim_FUN) {
 }
 
 #' @keywords internal
-#' @description This function adds a column to store the covariates which are used to
-#' compute the conditional mean in the later stage.
+# This function adds a column to store the covariates which are used to
+# compute the conditional mean in the later stage.
 add_covariates_column <- function(table0) {
   table0 %<>% dplyr::mutate(X = purrr::map(beta, ~rep(NA, length(.x) - 1)))  #intercept
 }
