@@ -4,7 +4,7 @@
 \alias{analyze_variable}
 \title{Detect variable type and decide what family of distribution to use}
 \usage{
-analyze_variable(x0)
+analyze_variable(x0, threshold = 5)
 }
 \arguments{
 \item{x0;}{data vector}

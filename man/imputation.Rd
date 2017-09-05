@@ -4,11 +4,24 @@
 \alias{imputation}
 \title{Perform imputation based on a graphical model}
 \usage{
-imputation(table0, data0)
+imputation(table0, data0, method = "response", threshold = 0.5)
 }
 \arguments{
-\item{table0}{data.frame; full joint density specification fitted to data}
+\item{table0}{data.frame; full joint density specification fitted to data.}
+
+\item{data0}{data.frame; the data.}
+
+\item{method}{"mean", "response" or "sample". See 'details' for more information.}
+
+\item{threshold}{probability threshold to decide the class for the binomial distribution.}
 }
 \description{
 Perform imputation based on a graphical model
+}
+\details{
+"mean" refers to impute with the conditional mean.
+"response" refers to impute with the fitted class / value.
+"sample" refers to impute with a sample from the conditional distribution.
+A common usage is to do multiple imputation.
+Note that "mean" and "response" are the same for continuous distribution.
 }

@@ -87,16 +87,37 @@ knitr::kable(data.frame(cbind(
 #  num_nodes <- 10
 #  rgraph <- create_random_graph(num_nodes, p = 0.2)
 #  
-#  m <- 8
+#  m <- 6
 #  family <- c(rep("gaussian", m), rep("gamma", num_nodes - m))
 #  
 #  table0 <- rgraph %>% factorise() %>% build_conditional(family = family)
 #  data0 <- simulate_data(table0, n = 1000)
 #  
 #  s <- learn_graph(data0, num_iter = 200, graph_init = "mutual")
-#  plot(compare_graphs(rgraph, s$best_model$rgraph))
-#  plot(compare_graphs(rgraph, s$freq_graph$rgraph > 0.75))
+#  plot(compare_graphs(rgraph, s$best_model$rgraph), edge.width = 2)
+#  plot(compare_graphs(rgraph, s$freq_graph$rgraph > 0.75), edge.width = 2)
 #  
 #  s2 <- learn_graph_by_CE(data0)
 #  plot(compare_graphs(rgraph, s2$graph > 0.5))
+
+## ------------------------------------------------------------------------
+library(glmGraph)
+set.seed(123)
+data0 <- mtcars
+
+# Learn the graph structure
+b <- learn_graph(data0, reg_FUN = "AIC")
+estimated_graph <- b$freq_graph$rgraph >= 0.55
+plot_graph(estimated_graph)
+
+# Fit the estimated graph structure to the data
+fitted_graph <- estimated_graph %>% 
+  fit_graph(family = b$freq_graph$family, data0 = data0)
+
+data1 <- simulate_data(fitted_graph, nrow(data0))
+colnames(data1) <- colnames(data0)
+head(data0)
+head(signif(data1, 3))
+
+g_tests(data0, data1)
 

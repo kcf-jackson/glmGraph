@@ -25,7 +25,7 @@ $$f(x_1, x_2, ..., x_p) = f_1(x_1 | x_2, ..., x_n)\,f_2(x_2 | x_3, ..., x_p) \cd
 then we specify a graph to describe the conditional dependencies, $x_i | x_j, j \in \mathcal{I}$ for some index set $\mathcal{I}$, and $p$ parametric models to describe the (conditional / marginal) distributions $f_1, f_2, ..., f_p$.
 
 
-For sake of clarity, we briefly introduce the graphical model. A graphical model is a statistical model specified by a graph. A graph consists of nodes and edges: nodes represent variables, and an edge between two nodes represents dependence between two variables. An example of a graph is shown in Figure 1. The graph specifies the dependence between the variables and gives us a way to simplify the conditional distributions. Take variable $X_1$ as an example; since this node is connected to only $X_3, X_4, X_7, X_8$, we have $f_1(x_1 | x_2, x_3, ..., x_{10}) = f_1(x_1 | x_3, x_4, x_7, x_8)$. Repeating the same procedure for all the $10$ components gives us a simplified factorisation. 
+For sake of clarity, we briefly introduce the graphical model. A graphical model is a statistical model specified by a graph. A graph consists of nodes and edges: nodes represent variables, and an edge between two nodes represents dependence between two variables. An example of a graph is shown in Figure 1. The graph specifies the dependence between the variables and gives us a way to simplify the conditional distributions. Take variable $X_1$ as an example; since this node is connected to only $X_3, X_4, X_7, X_8$, we have $f_1(x_1 | x_2, x_3, ..., x_{10}) = f_1(x_1 | x_3, x_4, x_7, x_8)$. Repeating the same procedure for all $10$ components gives us a simplified factorisation. 
 
 
 Next, we specify distributions for the simplified factorisation. The model we use is the Generalised Linear Model (GLM), the relationship between the variables is modelled by     
@@ -112,13 +112,15 @@ head(data0)
 
 
 ### Fit the graphical model to data {#model_fitting}
-There are two scenarios when one fits a graphical to data. One is that you already know the graph structure (e.g. from prior knowledge or expert's opinion), the other is you don't. In the former case, you use the function `MLE_graph`, and in the latter case where you want to estimate both the graph structure and the parameter values from data, you use the `select_graph` function.
+There are two scenarios when one fits a graphical model to data. One is that you already know the graph structure (e.g. from prior knowledge or expert's opinion), the other is you don't. In the former case, you use the function `MLE_graph` or `fit_graph`, and in the latter case where you want to estimate both the graph structure and the parameter values from data, you use the `select_graph` function.
 
 #### Known graph structure
 ```{r, eval=T, fig.height=4, fig.width=4}
 # Create a new table to fit the data 
 table1 <- rgraph %>% factorise() %>% build_conditional(family)
 table1 <- MLE_graph(table1, data0)
+# Or one can use the wrapper function 'fit_graph'
+table1 <- fit_graph(rgraph, family, data0)
 ```
 
 #### Unknown graph structure
@@ -127,8 +129,9 @@ g <- select_graph(data0)
 # extract graph 
 best <- g$best_model 
 est_graph <- best$rgraph
+est_family <- best$family
 # refit the data with known graph structure
-table2 <- est_graph %>% factorise() %>% build_conditional(best$family) %>% MLE_graph(data0)
+table2 <- fit_graph(est_graph, est_family, data0)
 ```
 
 
@@ -168,9 +171,9 @@ data0 <- simulate_data(t0, n = 1000)
 Next, we fit a new graphical model to the data:
 ```{r}
 # Fitting the data
-t1 <- g %>% factorise() %>% build_conditional(family = family) %>% MLE_graph(data0)
+t1 <- fit_graph(g, family, data0)
 ```
-Note that although we supplied the true graph structure `g` and the GLM family `family` to the new graphical model, the new model does not know the parameter values in the true model since these values are randomly assigned when the model is initialised.
+Note that we supplied the true graph structure `g` and the GLM family `family` to the new graphical model. However, the new model does not know the parameter values in the true model since these values are randomly assigned when the model is initialised.
 
 
 Finally, we compare the parameter estimates to the true ones
@@ -185,7 +188,7 @@ knitr::kable(data.frame(cbind(
 )))
 ```
 
-We can see in the above that the estimated parameters are closed to the true ones, indicating we have basically recovered the true model. If we measure the discrepancy of the estimated parameters by the root-mean-sqaured-relative-error (RMSRE), defined by 
+We can see in the above that the estimated parameters are closed to the true ones (within the $n^{-\frac 1 2}$ range), indicating we have basically recovered the true model. If we measure the discrepancy of the estimated parameters by the root-mean-sqaured-relative-error (RMSRE), defined by 
 $$RMSRE( \boldsymbol{\beta}, \boldsymbol{\hat{\beta}} ) = \dfrac 1 m \sum_{i = 1}^m \left(\dfrac{\beta_i - \hat{\beta_i}}{\beta_i}\right)^2,$$ 
 where $\boldsymbol\beta$ is the parameter of the true model, $\boldsymbol{\hat{\beta}}$ is the estimate, and $m$ is the total number of betas in the model, and then re-run the experiment 1000 times, we get:
 ```{r}
@@ -203,7 +206,7 @@ measure:
 num_nodes <- 10
 rgraph <- create_random_graph(num_nodes, p = 0.2)
 
-m <- 8
+m <- 6
 family <- c(rep("gaussian", m), rep("gamma", num_nodes - m))
 
 table0 <- rgraph %>% factorise() %>% build_conditional(family = family)
@@ -220,7 +223,27 @@ plot(compare_graphs(rgraph, s2$graph > 0.5))
 
 
 ### Real data example
+```{r}
+library(glmGraph)
+set.seed(123)
+data0 <- mtcars  # Other datasets: LifeCycleSavings
 
+# Learn the graph structure
+b <- learn_graph(data0, reg = "AIC")
+estimated_graph <- b$freq_graph$rgraph >= 0.55
+plot_graph(estimated_graph)
+
+# Fit the estimated graph structure to the data
+fitted_graph <- estimated_graph %>% 
+  fit_graph(family = b$freq_graph$family, data0 = data0)
+
+data1 <- simulate_data(fitted_graph, nrow(data0))
+colnames(data1) <- colnames(data0)
+head(data0)
+head(signif(data1, 3))
+
+g_tests(data0, data1)
+```
 
 
 
