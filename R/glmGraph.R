@@ -1,10 +1,10 @@
 #' A package for simulating data from a GLM graphical model
-#' @description This packages provides functions to simulate from and fit graphical models
+#' @description This package provides functions to simulate from and fit graphical models
 #' where all conditional distributions follow the generalised linear model. This is
 #' mainly used to construct an approximation to a multivariate distribution.
 #' @docType package
 #' @name glmGraph
-#' @author Jackson Kwok, Felix leung
+#' @author Jackson Kwok, Felix Leung
 NULL
 
 

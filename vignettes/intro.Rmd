@@ -223,7 +223,7 @@ plot(compare_graphs(rgraph, s2$graph > 0.5))
 
 
 ### Real data example
-```{r}
+```{r, eval = F}
 library(glmGraph)
 set.seed(123)
 data0 <- mtcars  # Other datasets: LifeCycleSavings
@@ -253,8 +253,42 @@ g_tests(data0, data1)
 
 ## 5. Theory {#theory}
 ### Select the 'best' model {#model_selection}
-We have seen that given the true graph structure, the method recovers the parameters values quite well. However, in real-world situation, the graph structure is usually unknown, and there are $2^(n \cdot (n-1))$ possible graphs ($n$ is the number of nodes) to search through. This is computationally infeasible; but with sampling technique (Gibbs sampler), we can reduce the computation to $O(n^2)$ and have good chance of finding the right structure.
+We have seen that given the true graph structure, the method recovers the parameters values quite well. However, in real-world situation, the graph structure is usually unknown, and there are $2^{(n \cdot (n-1))}$ possible graphs ($n$ is the number of nodes) to search through. This is computationally infeasible; but with sampling technique (Gibbs sampler), we can reduce the computation to $O(n^2)$ and have good chance of finding the right structure.
 Note: right structure is the true structure if the true structure is in our class of graphs. otherwise, right structure refers to the best fitting structure in our graph class.
+
+$\quad$Q1. **Given the data and the true graph structure, can we recover all the parameters values?**  
+$\quad$Q2. **Given the data, can we recover the graph structure?** (assuming the underlying model is in our class of models)  
+$\quad$Q3. **Given the data, how well can we approximate the underlying distribution?** (assuming the underlying model is outside of our class of models)
+
+Unique representation? Counter example (bivariate normal?)
+Equivalence class up to equal likelihood
+
+
+Q1. Yes. By consistency of GLM.
+
+Given the graph structure, 
+f(x_1, x_2, ..., x_p) = f
+
+## General ideas
+Consider IID $\vec{x_i}, i = 1, 2, ..., n$
+
+KL divergence:
+loglikelihood of the true model: $\int_{-\infty}^{\infty} f(x) \log f(x) dx$
+loglikelihood of the working model: $\int_{-\infty}^{\infty} f(x) \log g(x) dx$
+Deviance: 
+$$\displaystyle \int_{-\infty}^{\infty} f(x) \left[\log f(x) - \log g(x)\right] dx 
+= \int_{-\infty}^{\infty} f(x) \log \dfrac{f(x)}{g(x)} dx = E\left[\log{\dfrac{f(x)}{g(x)}}\right]$$
+
+Deviance:
+$$\displaystyle \sum_{i=1}^n \left[\log f(\vec{x_i}) - \log g(\vec{x_i})\right]
+= \sum_{i=1}^n \log \dfrac{f(\vec{x_i})}{g(\vec{x_i})}$$
+
+\begin{align}
+\prod_{i=1}^n f(\vec{x_i}) 
+\\= \prod_{i=1}^n \prod_{j=1}^{p} f_j(x_j | x_{-j})
+\\= \prod
+
+\end{align}
 
 
 
