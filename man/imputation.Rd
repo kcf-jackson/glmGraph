@@ -19,9 +19,9 @@ imputation(table0, data0, method = "response", threshold = 0.5)
 Perform imputation based on a graphical model
 }
 \details{
-"mean" refers to impute with the conditional mean.
-"response" refers to impute with the fitted class / value.
-"sample" refers to impute with a sample from the conditional distribution.
-A common usage is to do multiple imputation.
-Note that "mean" and "response" are the same for continuous distribution.
+"mean" refers to imputation with the conditional mean.
+"response" refers to imputation with the fitted class / value.
+"sample" refers to imputation with a sample from the conditional distribution.
+"sample" is commonly used to do multiple imputation.
+Note that "mean" and "response" are the same for continuous distributions.
 }

@@ -9,7 +9,7 @@ compute_likelihood(table0, data0, log = TRUE)
 \arguments{
 \item{table0}{dataframe; A factorisation table, output from "build_conditional".}
 
-\item{data0}{matrix or dataframe, the data.}
+\item{data0}{matrix or dataframe; the data.}
 
 \item{log}{TRUE / FALSE; returns loglikelihood / likelihood.}
 }
@@ -19,6 +19,6 @@ Compute the likelihood for a dataset given the complete factorisation table
 \note{
 Note that there are some discrepancy between the likelihood extracted from
 the model and the likelihood computed using this function for the gaussian and gamma
-family. The reason is that speedglm::speedglm (and stats:glm) computes the likelihood
+family. The reason is that speedglm::speedglm (and stats::glm) computes the likelihood
 using the ML estimates, but reports the LS estimates for the dispersion parameters.
 }

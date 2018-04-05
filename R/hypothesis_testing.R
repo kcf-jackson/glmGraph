@@ -10,10 +10,10 @@
 #'   in `?dist`.
 #' @examples
 #' ## Expect failure to reject null.
-#' g_tests(data.frame(x = rnorm(100)), data.frame(x = rnorm(100)))
+#' mst_test(data.frame(x = rnorm(100)), data.frame(x = rnorm(100)))
 #'
 #' ## Expect rejection of the null.
-#' g_tests(data.frame(x = rnorm(100)), data.frame(x = runif(100)))
+#' mst_test(data.frame(x = rnorm(100)), data.frame(x = runif(100)))
 #'
 #' @export
 #' @references Friedman J. and Rafsky L. Multivariate generalizations of the
@@ -26,7 +26,7 @@
 #'
 #' Chen, H., Chen, X. and Su, Y. A weighted edge-count two sample test for
 #' multivariate and object data. arXiv:1604.06515.
-g_tests <- function(df1, df2, method = "euclidean") {
+mst_test <- function(df1, df2, method = "euclidean") {
   df <- dplyr::bind_rows(df1, df2)
   dis <- stats::dist(df, method = method)
   mst <- vegan::spantree(dis)

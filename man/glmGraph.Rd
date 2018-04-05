@@ -6,10 +6,10 @@
 \alias{glmGraph-package}
 \title{A package for simulating data from a GLM graphical model}
 \description{
-This packages provides functions to simulate from and fit graphical models
+This package provides functions to simulate from and fit graphical models
 where all conditional distributions follow the generalised linear model. This is
 mainly used to construct an approximation to a multivariate distribution.
 }
 \author{
-Jackson Kwok, Felix leung
+Jackson Kwok, Felix Leung
 }

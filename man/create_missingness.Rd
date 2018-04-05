@@ -9,9 +9,9 @@ create_missingness(data0, p = 0.1)
 \arguments{
 \item{data0}{data.frame or matrix; the data}
 
-\item{p}{probability of missing}
+\item{p}{probability of missing; for each entry in the data, the
+missingness follows a Bernoulli(p) distribution.}
 }
 \description{
 Randomly remove entries from a dataset
 }
-\keyword{internal}

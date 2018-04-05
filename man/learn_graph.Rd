@@ -4,8 +4,8 @@
 \alias{learn_graph}
 \title{Model selection for GLM graph}
 \usage{
-learn_graph(data0, p = 0.2, lambda, num_iter = 100, graph_init = "random",
-  reg = "BIC", ...)
+learn_graph(data0, p = 0.2, lambda, num_iter = 100, burn_ins = 10,
+  graph_init = "random", reg = "BIC", ...)
 }
 \arguments{
 \item{data0}{dataframe; the data.}
@@ -15,6 +15,8 @@ learn_graph(data0, p = 0.2, lambda, num_iter = 100, graph_init = "random",
 \item{lambda}{Tuning parameter for gibbs sampler.}
 
 \item{num_iter}{number of iterations for gibbs sampler.}
+
+\item{burn_ins}{number of burn-ins for gibbs sampler.}
 
 \item{graph_init}{characters string; one of "random", "correlation" and "mutual".
 "random" generates a graph randomly. "correlation" computes the pairwise correlation

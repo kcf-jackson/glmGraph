@@ -2,7 +2,7 @@
 % Please edit documentation in R/factorisation.R
 \name{factorise}
 \alias{factorise}
-\title{The function generates a factorisation based on a graph}
+\title{The function generates a factorisation of a joint density based on a graph.}
 \usage{
 factorise(rgraph, response_node = 1)
 }
@@ -13,5 +13,9 @@ factorise(rgraph, response_node = 1)
 no response variable.}
 }
 \description{
-The function generates a factorisation based on a graph
+The function generates a factorisation of a joint density based on a graph.
+}
+\examples{
+m0 <- random_DAG(5)
+factorise(m0)
 }
