@@ -1,4 +1,4 @@
-#' Simulate data given the graphical model.
+#' Simulate data given a graphical model.
 #' @param table0 dataframe; the graphical model expressed in a complete
 #' factorisation table, output from "build_conditional".
 #' @param n integer; number of data to simulate.
@@ -35,9 +35,7 @@ simulate_data <- function(table0, n = 100) {
 get_available_rows <- function(table1, exclude = c()) {
   table1 %>%
     magrittr::use_series("given") %>%
-    purrr::map_lgl(
-      ~setdiff(.x, exclude) %>% purrr::is_empty()
-    ) %>%
+    purrr::map_lgl(~setdiff(.x, exclude) %>% purrr::is_empty()) %>%
     which() %>%
     setdiff(exclude)
 }

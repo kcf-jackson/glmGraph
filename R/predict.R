@@ -3,11 +3,11 @@
 #' @param data0 data.frame; the data.
 #' @param method "mean", "response" or "sample". See 'details' for more information.
 #' @param threshold probability threshold to decide the class for the binomial distribution.
-#' @details "mean" refers to impute with the conditional mean.
-#' "response" refers to impute with the fitted class / value.
-#' "sample" refers to impute with a sample from the conditional distribution.
-#' A common usage is to do multiple imputation.
-#' Note that "mean" and "response" are the same for continuous distribution.
+#' @details "mean" refers to imputation with the conditional mean.
+#' "response" refers to imputation with the fitted class / value.
+#' "sample" refers to imputation with a sample from the conditional distribution.
+#' "sample" is commonly used to do multiple imputation.
+#' Note that "mean" and "response" are the same for continuous distributions.
 #' @export
 imputation <- function(table0, data0, method = "response", threshold = 0.5) {
   predict_graph(table0, data0, method, threshold)
@@ -15,21 +15,22 @@ imputation <- function(table0, data0, method = "response", threshold = 0.5) {
 
 
 #' Predict based on a graphical model
-#' @param table0 data.frame; full joint density specification fitted to data.
+#' @param object data.frame; full joint density specification fitted to data.
 #' @param data0 data.frame; the data.
 #' @param resp_var character strings; the name of the variable to be predicted.
 #' @param method "mean" or "response". See 'details' for more information.
 #' @param threshold probability threshold to decide the class for the binomial distribution.
+#' @param ... further arguments passed to or from other methods.
 #' @details "mean" refers to predicting with the conditional mean.
 #' A common usage is to predict the probability for the occurrence of a class.
 #' "response" refers to predicting with the fitted class / value.
 #' A common usage is to predict the actual class.
 #' Note that "mean" and "response" are the same for continuous distribution.
 #' @export
-predict_graphical_model <- function(table0, data0, resp_var,
-                                    method = "mean", threshold = 0.5) {
+predict.gglm.data.frame <- function(object, data0, resp_var,
+                                    method = "mean", threshold = 0.5, ...) {
   data0[[resp_var]] <- NA
-  predict_graph(table0, data0, method, threshold) %>%
+  predict_graph(object, data0, method, threshold) %>%
     dplyr::select(dplyr::one_of(resp_var))
 }
 
@@ -71,9 +72,10 @@ predict_graph <- function(table0, data0, method = "mean", threshold = 0.5) {
 
 
 #' Randomly remove entries from a dataset
-#' @keywords internal
 #' @param data0 data.frame or matrix; the data
-#' @param p probability of missing
+#' @param p probability of missing; for each entry in the data, the
+#' missingness follows a Bernoulli(p) distribution.
+#' @export
 create_missingness <- function(data0, p = 0.1) {
   nr <- nrow(data0)
   nc <- ncol(data0)
