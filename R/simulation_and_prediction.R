@@ -1,3 +1,41 @@
+#' Simulate data given a graphical model.
+#' @param table0 dataframe; the graphical model expressed in a complete
+#' factorisation table, output from "build_conditional".
+#' @param n integer; number of data to simulate.
+#' @return n x p matrix; n is the number of data, p is the number of variables.
+#' @examples
+#' g_struct <- factorise(random_DAG(5))
+#' g_model <- build_conditional(g_struct, rep("gaussian", 5))
+#' simulate_data(g_model)
+#' @export
+simulate_data <- function(table0, n = 100) {
+  num_var <- nrow(table0)
+  data0 <- matrix(NA, nrow = n, ncol = num_var)
+  table1 <- table0 %>% add_covariates_column()
+
+  completed_index <- c()
+  while (any(is.na(data0))) {
+    current_index <- table1 %>% get_available_rows(completed_index)
+    for (i in current_index) {
+      current <- table1[i,]
+      c_fixed <- current$fixed[[1]]
+      c_given <- current$given[[1]]
+      c_family <- current$family[[1]]
+      c_beta <- current$beta[[1]]
+      c_invLink <- current$invLink_FUN[[1]]
+      c_sim_FUN <- current$simulation_FUN[[1]]
+      c_parameter <- current$parameter[[1]]
+
+      X <- as.matrix(cbind(1, data0[, c_given]))
+      mu <- drop(X %*% c_beta) %>% c_invLink()
+      data0[,c_fixed] <- get_sim_data(c_parameter, mu, c_family, c_sim_FUN)
+    }
+    completed_index %<>% c(current_index)
+  }
+  data.frame(data0)
+}
+
+
 #' Perform imputation based on a graphical model
 #' @param table0 data.frame; full joint density specification fitted to data.
 #' @param data0 data.frame; the data.
@@ -29,6 +67,7 @@ imputation <- function(table0, data0, method = "response", threshold = 0.5) {
 #' @export
 predict.gglm.data.frame <- function(object, data0, resp_var,
                                     method = "mean", threshold = 0.5, ...) {
+  assertthat::assert_that(method %in% c("mean", "response"))
   data0[[resp_var]] <- NA
   predict_graph(object, data0, method, threshold) %>%
     dplyr::select(dplyr::one_of(resp_var))
@@ -53,7 +92,8 @@ predict_graph <- function(table0, data0, method = "mean", threshold = 0.5) {
       c_sim_FUN <- current$simulation_FUN[[1]]
       c_parameter <- current$parameter[[1]]
 
-      mu <- get_batch_eta(c_beta, cbind(1, data0[, c_given])) %>% c_invLink()
+      X <- as.matrix(cbind(1, data0[, c_given]))
+      mu <- drop(X %*% c_beta) %>% c_invLink()
       if ((method == "response") & (c_family == "binomial")) {
         imputed_values <- as.numeric(mu > threshold)
       } else if ((method == "mean") | (method == "response")) {
@@ -68,21 +108,4 @@ predict_graph <- function(table0, data0, method = "mean", threshold = 0.5) {
     completed_index %<>% c(current_index)
   }
   data.frame(data0)
-}
-
-
-#' Randomly remove entries from a dataset
-#' @param data0 data.frame or matrix; the data
-#' @param p probability of missing; for each entry in the data, the
-#' missingness follows a Bernoulli(p) distribution.
-#' @export
-create_missingness <- function(data0, p = 0.1) {
-  nr <- nrow(data0)
-  nc <- ncol(data0)
-  total <- nr * nc
-  missingness <- matrix(
-    sample(c(NA, TRUE), size = total, prob = c(p, 1-p), replace = T),
-    nrow = nr, ncol = nc
-  )
-  data0 * missingness
 }

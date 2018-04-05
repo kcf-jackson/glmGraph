@@ -1,9 +1,4 @@
-# if_else <- function(test, yes, no) {
-#   if (test) return(yes)
-#   no
-# }
-
-
+# Assign names0 to columns and rows of m0
 add_names <- function(m0, names0) {
   if (missing(names0)) names0 <- paste0("x_{", 1:ncol(m0), "}")
   assertthat::assert_that(ncol(m0) == nrow(m0))
@@ -12,11 +7,13 @@ add_names <- function(m0, names0) {
 }
 
 
+# Apply f to each column of m
 map_cols <- function(m, f, mapfun = purrr::map) {
   mapfun(seq_len(ncol(m)), ~f(m[,.x]))
 }
 
 
+# Apply f to each row of m
 map_rows <- function(m, f, mapfun = purrr::map) {
   mapfun(seq_len(nrow(m)), ~f(m[.x,]))
 }
@@ -51,45 +48,22 @@ normalise <- function(vec0) {
 }
 
 
+# Return the index of the maximum element (first index if tied)
 #' @keywords internal
 which_max <- function(vec0) {
   min(which(vec0 == max(vec0)))
 }
 
 
+# Return the index of the minimum element (first index if tied)
 #' @keywords internal
 which_min <- function(vec0) {
   min(which(vec0 == min(vec0)))
 }
 
 
+# Return the indexes of all the NA elements.
 #' @keywords internal
 which_NA <- function(vec0) {
   which(is.na(vec0))
 }
-
-
-#' #' @keywords internal
-#' is.fitted <- function(table0) {
-#'   attributes(table0)$beta == "fitted"
-#' }
-
-
-#' #' @keywords internal
-#' dummy2factor <- function(m0, factor_name, factor_labels) {
-#'   res <- apply(m0, 1, function(x) which(x == 1)) %>%
-#'     factor(labels = factor_labels) %>% data.frame()
-#'   colnames(res) <- factor_name
-#'   res
-#' }
-
-
-# create_dummy <- function(df0) {
-#   map_chr(df0)
-# }
-
-
-#' #' @keywords internal
-#' permute_column <- function(data0) {
-#'   data0[,sample(ncol(data0))]
-#' }
