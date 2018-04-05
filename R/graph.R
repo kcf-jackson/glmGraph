@@ -1,59 +1,39 @@
-#' This function generates a random graph in adjacency matrix notation.
+#' This function generates a random directed acyclic graph (DAG) in adjacency matrix notation.
 #' @param num_nodes Integer; number of nodes available to be connected..
-#' @param p Between 0 and 1; additional parameter to control number of edges to be generated. See details.
-#' @details An edge is generated using Bernoulli(p) distribution.
+#' @param p p Between 0 and 1; a parameter to control number of edges to be generated.
+#' The higher this number is, the more connected the graph will be.
 #' @export
-create_random_graph <- function(num_nodes, p = 0.5) {
-  seq(num_nodes) %>%
-    purrr::map(
-      ~create_random_edges(num_nodes = num_nodes, zero_pos = .x, p = p)
-    ) %>%
-    do.call(rbind, .) %>%
-    make_symmetric()
-}
-#' This function creates random number of edges
-#' @param num_nodes Integer; number of nodes available to be connected.
-#' @param zero_pos The position of the node that shouldn't have an edge.
-#' @param p Probability of having an edge. This is a parameter to make sure
-#' the desired number of edges is generated.
-#' @keywords internal
-create_random_edges <- function(num_nodes, zero_pos, p = 0.5) {
-  edges <- rbinom(num_nodes, 1, p)
-  edges[zero_pos] <- 0  # An edge to itself is not allowed.
-  edges
-}
-#' Helper function to create symmetric matrix
-#' @keywords internal
-make_symmetric <- function(m0) {
-  m1 <- m0 + t(m0)
-  m1[m1 == 2] <- 1
-  m1
+random_DAG <- function(num_nodes, p = 0.5) {
+  mp <- c(1 - p, p / 2, p / 2)  # multinomial probabilities
+  draws <- sample(0:2, num_nodes * (num_nodes - 1) / 2, prob = mp, replace = T)
+  m0 <- matrix(0, nrow = num_nodes, ncol = num_nodes)
+  m0[upper.tri(m0)] <- draws
+  m0 <- to_nominal_form(m0)
+
+  not_DAG <- . %>% add_names() %>% gRbase::topoSort() %>% purrr::is_empty()
+  while (not_DAG(m0)) {
+    m0 <- random_DAG(num_nodes, p)
+  }
+  m0
 }
 
 
-#' This function plots graph from the function "create_random_graph".
-#' @param rgraph matrix; output from "create_random_graph".
-#' @param vertex.size plot size of the node.
-#' @param ... extra parameters to be passed to the 'igraph::plot.igraph' function.
-#' @export
-plot_graph <- function(rgraph, vertex.size = 30, ...) {
-  rgraph %>%
-    igraph::graph_from_adjacency_matrix(mode = "undirected") %>%
-    plot(vertex.size = vertex.size, ...)
+# Nominal form refers to a full matrix with only 0, 1 entries.
+# This function converts upper-triangular matrix with entries 0,1,2 to full matrix with 0,1.
+to_nominal_form <- function(m0) {
+  m1 <- m0
+  m1[m1 > 0] <- m1[m1 > 0] - 1
+  m0 - 2 * m1 + t(m1)
 }
-# #' @keywords internal
-# ggplot_graph <- function(graph, color) {
-#   if (missing(color)) {color = 'grey'}
-#   GGally::ggnet2(graph,
-#     arrow.size = 6, arrow.gap = 0.03, edge.color = color,
-#     label = paste("X", seq(vcount(graph)), sep = ""),
-#     color = 'orange',
-#    )
-# }
-#
-# plot(a, vertex.size = 35,
-#      edge.arrow.size = 0.5, edge.width = 1, edge.arrow.size = 0.15,
-#      asp = 1.5)
+
+
+# This function converts full matrix with 0,1 to upper-triangular matrix with entries 0,1,2.
+from_nominal_form <- function(m0) {
+  m1 <- m0
+  m0[lower.tri(m0)] <- 0
+  m1[upper.tri(m1)] <- 0
+  m0 + 2 * t(m1)
+}
 
 
 #' @keywords internal
