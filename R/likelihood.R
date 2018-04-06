@@ -34,7 +34,7 @@ eval_marginal_likelihood <- function(marginal, resp_variable, covariates) {
   #update conditional mean
   invLink <- marginal$invLink_FUN[[1]]
   beta <- marginal$beta[[1]]
-  mu <- get_batch_eta(beta, cbind(1, covariates)) %>% invLink()
+  mu <- drop(as.matrix(cbind(1, covariates)) %*% beta) %>% invLink()
   #update parameters and compute the likelihood
   parameters <- marginal$parameters[[1]]
   family <- marginal$family[[1]]
@@ -46,15 +46,6 @@ eval_marginal_likelihood <- function(marginal, resp_variable, covariates) {
       append(mean2parameters(parameters, .y, family), list(x = .x, log = TRUE))
     )
   ) %>% sum()
-}
-
-
-#' Get likelihood from a fitted model
-#' @param table0 data.frame; the fitted graph from 'MLE_graph'.
-#' @return The loglikelihood value.
-#' @export
-get_model_likelihood <- function(table0) {
-  attr(table0, "loglikelihood")
 }
 
 

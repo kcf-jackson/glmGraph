@@ -4,13 +4,10 @@
 \alias{factorise}
 \title{The function generates a factorisation of a joint density based on a graph.}
 \usage{
-factorise(rgraph, response_node = 1)
+factorise(rgraph)
 }
 \arguments{
 \item{rgraph}{matrix; graph represented by an adjacency matrix}
-
-\item{response_node}{the index of the response variable; simply ignore if there is
-no response variable.}
 }
 \description{
 The function generates a factorisation of a joint density based on a graph.

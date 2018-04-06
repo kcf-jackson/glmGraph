@@ -4,16 +4,36 @@
 \alias{MLE_graph}
 \title{Fitting the GLM graphical model with MLE.}
 \usage{
-MLE_graph(table0, data0)
+MLE_graph(table0, data0, progress = T)
 }
 \arguments{
 \item{table0}{dataframe; the complete factorisation table, output from "build_conditional".}
 
 \item{data0}{dataframe; the data.}
+
+\item{progress}{T or F; whether to show progress bar.}
 }
 \value{
 dataframe; the complete factorisation table with fitted beta.
 }
 \description{
 Fitting the GLM graphical model with MLE.
+}
+\examples{
+\dontrun{
+library(magrittr)
+
+# Create a data generating process randomly and simulate data from it
+g_struct <- random_DAG(10) \%>\% factorise()
+truth <- build_conditional(g_struct, rep("gaussian", 10))
+sim_data <- simulate_data(truth, n = 1000)
+
+# Create a empty model with the given graph structure but with random coefficients
+g_model <- build_conditional(g_struct, rep("gaussian", 10))
+is_fitted(g_model)
+data.frame(rbind(truth = truth$beta, model = g_model$beta)) # compare coefficients before fitting
+
+g_model <- MLE_graph(g_model, sim_data, T)
+data.frame(rbind(truth = truth$beta, model = g_model$beta)) # compare coefficients after fitting
+}
 }

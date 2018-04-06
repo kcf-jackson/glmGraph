@@ -4,26 +4,24 @@
 \alias{learn_graph}
 \title{Model selection for GLM graph}
 \usage{
-learn_graph(data0, p = 0.2, lambda, num_iter = 100, burn_ins = 10,
-  graph_init = "random", reg = "BIC", ...)
+learn_graph(data0, p = 0.2, init_rgraph, lambda, reg = "BIC",
+  num_iter = 100, burn_ins = 10, ...)
 }
 \arguments{
 \item{data0}{dataframe; the data.}
 
-\item{p}{Between 0 and 1; prior brief of how connected the graph is.}
+\item{p}{Between 0 and 1; prior brief of how connected the graph is. If init_rgraph is
+specified, then this is not used.}
+
+\item{init_rgraph}{adjacency matrix (optional); the graph to begin estimation with.}
 
 \item{lambda}{Tuning parameter for gibbs sampler.}
+
+\item{reg}{Information criteria for regularisation; "AIC" or "BIC".}
 
 \item{num_iter}{number of iterations for gibbs sampler.}
 
 \item{burn_ins}{number of burn-ins for gibbs sampler.}
-
-\item{graph_init}{characters string; one of "random", "correlation" and "mutual".
-"random" generates a graph randomly. "correlation" computes the pairwise correlation
-between variables and keeps the ones above the third quartile. "mutual" is similar to
-"correlation" except it uses pairwise mutual information instead.}
-
-\item{reg}{Information criteria for regularisation; "AIC" or "BIC".}
 
 \item{...}{Extra parameters to be passed to speedglm::speedglm.}
 }
