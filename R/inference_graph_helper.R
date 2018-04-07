@@ -64,11 +64,17 @@ bind_graph_with_family <- function(rgraph, family) {
 evaluate_graphs <- function(data0, rgraph, i, j, current_likelihood, current_fac, IC_factor, ...) {
   likelihood <- numeric(3)
   eval_like_if_DAG <- function(direction, i, j, ...) {
-    ifelse(
-      check_graph(rgraph, i, j, direction),
-      add_new_likelihood(current_fac[i,], j, ...),
-      -Inf
-    )
+    new_graph <- gibbs_graph(direction + 1, rgraph, i, j)
+    if (is_DAG(new_graph)) {
+      add_like <- ifelse(
+        direction == 1,
+        add_new_likelihood(current_fac[j,], i, ...),
+        add_new_likelihood(current_fac[i,], j, ...)
+      )
+    } else {
+      add_like <- -Inf
+    }
+    add_like
   }
   add_new_likelihood <- function(current, j, ...) {
     fixed <- current$fixed[[1]]
@@ -93,10 +99,9 @@ evaluate_graphs <- function(data0, rgraph, i, j, current_likelihood, current_fac
     edge_num_adjustment <- ifelse(state, 1, -1) * IC_factor
     new_marginal_likelihood - current_marginal_likelihood + edge_num_adjustment
   }
-
   if ((rgraph[i,j] == 0) && (rgraph[j,i] == 0)) {
     likelihood[1] <- current_likelihood
-    likelihood[2] <- likelihood[1] + eval_like_if_DAG(1, j, i, ...)
+    likelihood[2] <- likelihood[1] + eval_like_if_DAG(1, i, j, ...)
     likelihood[3] <- likelihood[1] + eval_like_if_DAG(2, i, j, ...)
   } else if (rgraph[i,j] == 1) {
     likelihood[2] <- current_likelihood
@@ -105,7 +110,7 @@ evaluate_graphs <- function(data0, rgraph, i, j, current_likelihood, current_fac
   } else if (rgraph[j,i] == 1) {
     likelihood[3] <- current_likelihood
     likelihood[1] <- likelihood[3] + add_new_likelihood(current_fac[i,], j, ...)
-    likelihood[2] <- likelihood[1] + eval_like_if_DAG(1, j, i, ...)
+    likelihood[2] <- likelihood[1] + eval_like_if_DAG(1, i, j, ...)
   }
   likelihood
 }
@@ -135,6 +140,7 @@ gibbs_update <- function(lambda, score_vec) {
 
 
 gibbs_graph <- function(jump, rgraph, i, j) {
+  # jump takes value 1, 2 or 3.
   rgraph[i,j] <- rgraph[j,i] <- 0
   if (jump == 2) {
     rgraph[i,j] <- 1
@@ -142,11 +148,4 @@ gibbs_graph <- function(jump, rgraph, i, j) {
     rgraph[j,i] <- 1
   }
   rgraph
-}
-
-
-check_graph <- function(rgraph, i, j, direction) {
-  not_DAG <- . %>% add_names() %>% gRbase::topoSort() %>% purrr::is_empty()
-  new_graph <- gibbs_graph(direction + 1, rgraph, i, j)
-  !not_DAG(new_graph)
 }

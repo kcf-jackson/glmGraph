@@ -18,6 +18,17 @@ random_DAG <- function(num_nodes, p = 0.5) {
 }
 
 
+#' This function checks if an adjacency matrix is a DAG.
+#' @param m0 Numeric matrix; an adjacency matrix.
+#' @export
+is_DAG <- function(m0) {
+  !(m0 %>%
+    add_names() %>%
+    gRbase::topoSort() %>%
+    purrr::is_empty())
+}
+
+
 # Nominal form refers to a full matrix with only 0, 1 entries.
 # This function converts upper-triangular matrix with entries 0,1,2 to full matrix with 0,1.
 to_nominal_form <- function(m0) {
